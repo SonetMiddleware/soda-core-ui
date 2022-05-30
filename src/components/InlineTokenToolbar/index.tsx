@@ -136,7 +136,7 @@ function InlineTokenToolbar(props: {
     for (const item of data) {
       let u: any
       try {
-        u = await appInvoke(app, AppFunction.getUserPage, {
+        u = await appInvoke(item.application, AppFunction.getUserPage, {
           appid: item.appid
         })
       } catch (e) {
