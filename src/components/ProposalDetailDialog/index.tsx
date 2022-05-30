@@ -115,9 +115,7 @@ export default (props: IProps) => {
           <div className="header-left">
             <p className="end-time">End at {formatDateTime(detail.endTime)}</p>
             <p className="title">{detail.title}</p>
-            <p className="total-supporter">
-              Total supporter - {totalSupporters}
-            </p>
+            <p className="total-supporter">Votes - {totalSupporters}</p>
           </div>
           <div className="header-right">
             <img src={IconClose} alt="" onClick={() => onClose()} />

@@ -34,10 +34,12 @@ import IconMinterRole from '../../assets/images/icon-minter-role.png'
 import IconMinter from '../../assets/images/icon-minter.png'
 import IconOwnerRole from '../../assets/images/icon-owner-role.png'
 import IconOwner from '../../assets/images/icon-owner.png'
+import IconMinterOwner from '../../assets/images/icon-minter-owner.png'
 import IconShare from '../../assets/images/icon-share.png'
 import IconSource from '../../assets/images/icon-source.png'
 import IconDao from '../../assets/images/icon-dao.svg'
 import IconProposal from '../../assets/images/icon-proposal.svg'
+import { IconShareFB, IconShareTwitter } from './icon'
 
 function InlineTokenToolbar(props: {
   token?: NFT
@@ -202,26 +204,17 @@ function InlineTokenToolbar(props: {
     <div className="img-mask-share">
       <ul>
         <li>
-          <Button
-            type="link"
-            target="_blank"
+          <IconShareTwitter
+            onClick={handleShare}
             disabled={window.location.href.includes('twitter')}
-            onClick={handleShare}>
-            Share to Twitter <ArrowRightOutlined />{' '}
-          </Button>
+          />
         </li>
         <li>
-          <Button
-            type="link"
-            target="_blank"
+          <IconShareFB
+            onClick={handleShare}
             disabled={window.location.href.includes('facebook')}
-            onClick={handleShare}>
-            Share to Facebook <ArrowRightOutlined />{' '}
-          </Button>
+          />
         </li>
-        {/* <li>
-                    <a href="" target="_blank" >Share to Instagram <ArrowRightOutlined /> </a>
-                </li> */}
       </ul>
     </div>
   )
@@ -300,7 +293,7 @@ function InlineTokenToolbar(props: {
                 </div>
               </Popover>
             )}
-            {token && (
+            {token && token.source && (
               <Popover content="View source">
                 <div className="toolbar-icon" onClick={handleToSource}>
                   <img src={IconSource} alt="" />
@@ -312,7 +305,9 @@ function InlineTokenToolbar(props: {
                 placement="bottom"
                 title={'Share'}
                 content={shareContent}
-                trigger="hover">
+                trigger="hover"
+                overlayClassName="toolbar-share"
+                className="toolbar-share">
                 <div className="toolbar-icon">
                   <img src={IconShare} alt="" />
                 </div>
@@ -382,30 +377,7 @@ function InlineTokenToolbar(props: {
         {isBothMinterOwner && (
           <Popover content="This is the minter & owner">
             <div className="toolbar-icon" onClick={handleToMinterWeb2}>
-              <svg
-                width="17"
-                height="18"
-                viewBox="0 0 17 18"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M7.2514 10.6147V17.1467H0C0 15.4143 0.763985 13.7529 2.12389 12.5279C3.48379 11.3029 5.32821 10.6147 7.2514 10.6147V10.6147ZM12.69 16.7385L10.026 18L10.5345 15.3284L8.3799 13.4357L11.3584 13.0454L12.69 10.6147L14.0224 13.0454L17 13.4357L14.8454 15.3284L15.353 18L12.69 16.7385ZM7.2514 9.79814C4.2466 9.79814 1.81285 7.60581 1.81285 4.89907C1.81285 2.19233 4.2466 0 7.2514 0C10.2562 0 12.69 2.19233 12.69 4.89907C12.69 7.60581 10.2562 9.79814 7.2514 9.79814Z"
-                  fill="url(#paint0_linear_64:366)"
-                />
-                <defs>
-                  <linearGradient
-                    id="paint0_linear_64:366"
-                    x1="8.5"
-                    y1="0"
-                    x2="8.5"
-                    y2="18"
-                    gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#FF9A46" />
-                    <stop offset="0.489583" stop-color="#FF67C1" />
-                    <stop offset="0.973958" stop-color="#9D5FE9" />
-                  </linearGradient>
-                </defs>
-              </svg>
+              <img src={IconMinterOwner} />
             </div>
           </Popover>
         )}

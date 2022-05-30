@@ -8,7 +8,7 @@ export default (props: { token: NFT; [key: string]: any }) => {
   const { token, ...rest } = props
   const [src, setSrc] = useState(token.source)
   useEffect(() => {
-    const sourceHandle = async () => {
+    ;(async () => {
       const source = await getCacheMedia({
         token,
         storageConfig: {
@@ -16,8 +16,7 @@ export default (props: { token: NFT; [key: string]: any }) => {
         }
       })
       setSrc(source)
-    }
-    sourceHandle()
+    })()
   }, [])
 
   return (

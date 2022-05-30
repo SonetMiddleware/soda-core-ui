@@ -32,7 +32,10 @@ export default function InlineApplicationBindBox(props: IProps) {
     await navigator.clipboard.writeText(content)
     newPostTrigger(app)
     Notification.success(
-      'The binding post is generated. Please tweet/post this message to pulish your binding relationship.'
+      // FIXME: hard code for now
+      `Click into your ${
+        app === 'Twitter' ? 'tweet box' : 'status bar'
+      } and paste the binding message from your clipboard. Then post to finish the bind.`
     )
     setShow(false)
     // await pasteShareTextToEditor(app, content)
@@ -59,6 +62,7 @@ export default function InlineApplicationBindBox(props: IProps) {
         setShow(false)
       } else {
         setShow(true)
+        // window.scrollTo({ top: 0, behavior: 'smooth' })
         return
       }
     })()
@@ -165,7 +169,7 @@ export default function InlineApplicationBindBox(props: IProps) {
         <div>
           <p className="title">You need to send post to finish the binding.</p>
           <div className="bind-btns">
-            <button className="btn-primary" onClick={handleBind}>
+            <button className="soda-btn-primary" onClick={handleBind}>
               Send Post
             </button>
             <a

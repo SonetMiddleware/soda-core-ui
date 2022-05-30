@@ -10,6 +10,8 @@ import * as PubSub from 'pubsub-js'
 import FavTokenList from './FavTokenList'
 import OwnedNFTList from './OwnedTokenList'
 import UploadNFT from './UploadToken'
+import { getCapableServiceNames } from '@soda/soda-core'
+
 const { TabPane } = Tabs
 interface IProps {
   app: string
@@ -20,8 +22,9 @@ function ResourceDialog(props: IProps) {
   const { app, onClose, publishFunc } = props
   const [show, setShow] = useState(false)
   const [address, setAddress] = useState('')
+  const [chainId, setChainId] = useState(0)
+  const [isMintable, setMintable] = useState(false)
   const [tab, setTab] = useState('1')
-  const [isCurrentMainnet, setIsCurrentMainNet] = useState(false)
 
   const ref = useRef<HTMLDivElement>(null)
 
@@ -43,9 +46,9 @@ function ResourceDialog(props: IProps) {
     ;(async () => {
       const addr = await getAddress()
       setAddress(addr)
-      // TODO mainnet
-      const isMain = true //await isMainNet()
-      setIsCurrentMainNet(isMain)
+      const { chainId, assetServices } = await getCapableServiceNames('mint')
+      setChainId(chainId)
+      setMintable(assetServices.length > 0)
     })()
   }, [])
 
@@ -73,7 +76,7 @@ function ResourceDialog(props: IProps) {
               setTab(key)
             }}>
             <TabPane tab="My Favorite" key="1" className="fav-list" />
-            {!isCurrentMainnet && <TabPane tab="Mint" key="2" />}
+            {isMintable && <TabPane tab="Mint" key="2" />}
             <TabPane tab="NFT Portfolio" key="3" className="fav-list" />
           </Tabs>
           <div className="tab-content">

@@ -2,19 +2,12 @@ import {
   TokenCache,
   getToken,
   getCacheMedia,
-  getChainId,
   getRole,
   mint as mintCore,
   NFT
 } from '@soda/soda-core'
 import { message } from 'antd'
-import { getAppConfig } from '@soda/soda-package-index'
 
-const getAssetService = async (chainId?: number) => {
-  const cid = chainId ? chainId : await getChainId()
-  const svc = getAppConfig(cid).assetService as string[]
-  return { chainId: cid, assetService: svc[0] }
-}
 export const shareByToken = async (token: NFT) => {
   const imgDataBlob = await getCacheMedia({
     token,
