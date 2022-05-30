@@ -1,0 +1,87 @@
+.proposal-container {
+  > .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    > .title {
+      margin-right: 237px;
+      color: #11142d;
+      font-weight: 600;
+      font-size: 24px;
+      font-family: 'Poppins';
+      font-style: normal;
+    }
+    > .btn-new-proposal {
+      width: 178px;
+      height: 40px;
+      font-weight: 600;
+      font-size: 16px;
+      font-family: 'Poppins';
+      font-style: normal;
+    }
+  }
+  .proposal-modal-content {
+    display: flex;
+    align-items: flex-start;
+    > .left-content {
+      width: 180px;
+      margin-right: 38px;
+      > .dao-img {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 152px;
+        margin-bottom: 30px;
+        > img {
+          width: 134px;
+          height: 134px;
+          margin-bottom: 8px;
+        }
+        > .dao-name {
+          color: #11142d;
+          font-weight: 600;
+          font-size: 14px;
+          font-family: 'Poppins';
+          font-style: normal;
+          line-height: 15px;
+          text-align: left;
+        }
+      }
+      > .dao-detail-info {
+        > .dao-info-item {
+          display: flex;
+          align-items: center;
+          margin-bottom: 10px;
+          > span {
+            font-weight: 500;
+            font-size: 10px;
+            font-family: 'Poppins';
+            font-style: normal;
+            line-height: 15px;
+          }
+          > .label {
+            margin-right: 3px;
+            color: #808191;
+          }
+          > .value {
+            color: #11142d;
+          }
+        }
+      }
+    }
+    > .proposal-list-container {
+      flex: 1;
+      > .proposal-list {
+        height: 400px;
+        overflow: auto;
+      }
+    }
+  }
+}
+.proposal-modal {
+  .ant-modal-content {
+    border-radius: 25px;
+    box-shadow: -8px -8px 20px rgba(0, 0, 0, 0.05),
+      8px 8px 20px rgba(0, 0, 0, 0.05);
+  }
+}

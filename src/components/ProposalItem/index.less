@@ -1,0 +1,51 @@
+.proposal-item-container {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  box-sizing: border-box;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  padding: 22px 24px;
+  width: 100%;
+  display: flex;
+  .proposal-left {
+    flex: 1;
+    margin-right: 30px;
+  }
+  .proposal-title {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    color: #11142d;
+    margin-bottom: 8px;
+    cursor: pointer;
+    &:hover {
+      color: #9d5fe9;
+    }
+  }
+  .proposal-desc {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: #11142d;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 40px;
+    margin-bottom: 20px;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .proposal-item-footer {
+    > .start-date-time {
+      font-family: 'Poppins';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 12px;
+      color: #808191;
+    }
+  }
+}
