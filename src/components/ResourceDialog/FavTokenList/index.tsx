@@ -25,8 +25,8 @@ export default (props: IProps) => {
       setLoading(true)
       const nfts = await getFavTokens({
         address,
-        page: currentPage,
-        gap: PAGE_SIZE
+        offset: (currentPage - 1) * PAGE_SIZE,
+        limit: PAGE_SIZE
       })
       setTotal(nfts.total)
       const _nfts = []

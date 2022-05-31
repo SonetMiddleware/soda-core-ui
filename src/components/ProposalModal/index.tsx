@@ -8,7 +8,7 @@ import {
   getProposalList,
   getAddress,
   getBalance,
-  CollectionItem,
+  CollectionDao,
   Proposal,
   getChainId
 } from '@soda/soda-core'
@@ -18,12 +18,12 @@ import { openExtensionPage } from '@/utils/chrome'
 interface IProps {
   show: boolean
   onClose: () => void
-  collection: CollectionItem
+  collectionDao: CollectionDao
 }
 
 export default (props: IProps) => {
-  const { show, onClose, collection } = props
-  const { dao: currentDao } = collection || {}
+  const { show, onClose, collectionDao } = props
+  const { dao: currentDao } = collectionDao || {}
   const [list, setList] = useState<Proposal[]>([])
   const [showModal, setShowModal] = useState(false)
   const [address, setAddress] = useState('')
@@ -40,7 +40,7 @@ export default (props: IProps) => {
   }
   const handleDetailDialogClose = () => {
     setShowModal(false)
-    fetchProposalList(collection.id)
+    fetchProposalList(collectionDao.collection.id)
   }
 
   const fetchUserInfo = async () => {
@@ -51,7 +51,8 @@ export default (props: IProps) => {
     const balance = await getBalance({
       cache: {
         chainId,
-        contract: collection.id
+        // FIXME: one dao one collection only
+        contract: collectionDao.collection.id
       },
       address: addr
     })
@@ -61,14 +62,14 @@ export default (props: IProps) => {
   }
 
   useEffect(() => {
-    if (show && collection && collection.id) {
-      fetchProposalList(collection.id)
+    if (show && collectionDao && collectionDao.collection.id) {
+      fetchProposalList(collectionDao.collection.id)
       fetchUserInfo()
     }
-  }, [collection, show])
+  }, [collectionDao, show])
 
   const handleNew = () => {
-    openExtensionPage(`daoNewProposal?dao=${collection.id}`)
+    openExtensionPage(`daoNewProposal?dao=${collectionDao.collection.id}`)
   }
 
   return ReactDOM.createPortal(
@@ -94,7 +95,7 @@ export default (props: IProps) => {
         <div className="proposal-modal-content">
           <div className="left-content">
             <div className="dao-img">
-              <img src={collection?.image} alt="" />
+              <img src={collectionDao?.collection.image} alt="" />
               <p className="dao-name">{currentDao?.name}</p>
             </div>
             <div className="dao-detail-info">
@@ -133,7 +134,7 @@ export default (props: IProps) => {
           </div>
           {selectedProposal && (
             <ProposalDetailDialog
-              collection={collection}
+              collectionDao={collectionDao}
               show={showModal}
               detail={selectedProposal!}
               onClose={handleDetailDialogClose}

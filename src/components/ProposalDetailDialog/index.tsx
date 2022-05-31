@@ -8,7 +8,7 @@ import {
   formatDateTime,
   vote as voteProposal,
   getUserVoteInfo,
-  CollectionItem,
+  CollectionDao,
   ProposalStatusEnum,
   Proposal,
   sha3,
@@ -19,14 +19,14 @@ import { ExclamationCircleOutlined } from '@ant-design/icons'
 interface IProps {
   show: boolean
   detail: Proposal
-  collection: CollectionItem
+  collectionDao: CollectionDao
   onClose: (updatedProposalId?: string) => void
   address: string
   inDao: boolean
 }
 
 export default (props: IProps) => {
-  const { show, detail, onClose, collection, address, inDao } = props
+  const { show, detail, onClose, collectionDao, address, inDao } = props
   const [vote, setVote] = useState<string>()
   const [submitting, setSubmitting] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
@@ -63,7 +63,7 @@ export default (props: IProps) => {
       })
       const result = await voteProposal({
         voter: address,
-        collectionId: collection!.id,
+        daoId: collectionDao!.collection.id,
         proposalId: detail.id,
         item: vote,
         sig: res.result
@@ -88,7 +88,7 @@ export default (props: IProps) => {
       if (show && detail) {
         const res = await getUserVoteInfo({
           proposalId: detail.id,
-          collectionId: collection.id,
+          daoId: collectionDao.collection.id,
           address
         })
         if (res) {

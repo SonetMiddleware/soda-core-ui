@@ -11,11 +11,11 @@ import {
   getTokenSource,
   generateTokenMask,
   BindInfo,
-  CollectionItem,
+  CollectionDao,
   appInvoke,
   AppFunction,
-  getTokenMarketplacePage,
-  getCollectionByToken
+  getCollectionDaoByToken,
+  getInlineMarketplace
 } from '@soda/soda-core'
 import { Popover, message, Button } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
@@ -53,7 +53,7 @@ function InlineTokenToolbar(props: {
   const [minterAccount, setMinterAccount] = useState<BindInfo[]>([])
   const [ownerAccount, setOwnerAccount] = useState<BindInfo[]>([])
   const [address, setAddress] = useState('')
-  const [collection, setCollection] = useState<CollectionItem>()
+  const [collectionDao, setCollectionDao] = useState<CollectionDao>()
   const [proposalModalShow, setProposalModalShow] = useState(false)
   const { token, app, username } = props
 
@@ -171,8 +171,8 @@ function InlineTokenToolbar(props: {
   }
   const handleToMarket = async (e) => {
     e.stopPropagation()
-    const uri = await getTokenMarketplacePage(token)
-    window.open(uri)
+    const { url } = await getInlineMarketplace(token)
+    window.open(url)
   }
   const handleMint = async () => {
     if (!address) {
@@ -196,7 +196,7 @@ function InlineTokenToolbar(props: {
     // FIXME: hardcode for now
     const targetUrl = window.location.href.includes('twitter')
       ? 'https://www.facebook.com'
-      : 'https://www.twitter.com'
+      : 'https://twitter.com'
     window.open(targetUrl, '_blank')
   }
 
@@ -232,13 +232,13 @@ function InlineTokenToolbar(props: {
   }
 
   const fetchCollectionInfo = async () => {
-    const collection = await getCollectionByToken(token) // TODO:get contract from meta
-    setCollection(collection)
+    const collection = await getCollectionDaoByToken(token) // TODO:get contract from meta
+    setCollectionDao(collection)
   }
 
   const handleToDaoPage = async (e: any) => {
     e.stopPropagation()
-    openExtensionPage(`daoDetail?dao=${collection.id}`)
+    openExtensionPage(`daoDetail?dao=${collectionDao.collection.id}`)
   }
 
   const onCloseProposalModal = () => {
@@ -344,14 +344,14 @@ function InlineTokenToolbar(props: {
                 </div>
               </Popover>
             )}
-            {collection && (
+            {collectionDao && (
               <Popover content="DAO">
                 <div className="toolbar-icon" onClick={handleToDaoPage}>
                   <img src={IconDao} alt="" />
                 </div>
               </Popover>
             )}
-            {collection && (
+            {collectionDao && (
               <Popover content="Proposal">
                 <div className="toolbar-icon" onClick={handleToProposal}>
                   <img src={IconProposal} alt="" />
@@ -385,7 +385,7 @@ function InlineTokenToolbar(props: {
       <ProposalModal
         show={proposalModalShow}
         onClose={onCloseProposalModal}
-        collection={collection}
+        collectionDao={collectionDao}
       />
     </div>
   )

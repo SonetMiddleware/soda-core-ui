@@ -28,8 +28,8 @@ export default (props: IProps) => {
           setLoading(true)
           const nfts = await getOwnedTokens({
             address,
-            page,
-            gap: PAGE_SIZE
+            offset: (page - 1) * PAGE_SIZE,
+            limit: PAGE_SIZE
           })
           console.debug('[core-ui] fetchOwnedList: ', nfts)
           setOwnedNFTs([])
