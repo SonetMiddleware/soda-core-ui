@@ -3,21 +3,27 @@ import { LoadingOutlined } from '@ant-design/icons'
 import './index.less'
 import { getCacheMedia, NFT } from '@soda/soda-core'
 
-export default (props: { token: NFT; [key: string]: any }) => {
+export default (props: { token: NFT; flex?: boolean; [key: string]: any }) => {
   const [loading, setLoading] = useState(true)
-  const { token, ...rest } = props
+  const { token, flex, ...rest } = props
   const [src, setSrc] = useState(token.source)
   useEffect(() => {
     ;(async () => {
-      const source = await getCacheMedia({
-        token,
-        storageConfig: {
-          uri: true
-        }
-      })
-      setSrc(source)
+      try {
+        const source = await getCacheMedia({
+          token,
+          storageConfig: {
+            uri: true
+          }
+        })
+        setSrc(source)
+      } catch (e) {
+        console.error(
+          '[core-ui] MediaCacheDisplay get cache media source: ' + e
+        )
+      }
     })()
-  }, [])
+  }, [token])
 
   return (
     <>
@@ -27,7 +33,7 @@ export default (props: { token: NFT; [key: string]: any }) => {
         <LoadingOutlined />
       </div>
       <div
-        className="img-container"
+        className={flex ? 'img-container-flex' : 'img-container'}
         style={{ display: loading ? 'none' : 'flex' }}>
         <img
           src={src}

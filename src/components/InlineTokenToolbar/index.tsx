@@ -43,10 +43,22 @@ import { IconShareFB, IconShareTwitter } from './icon'
 
 function InlineTokenToolbar(props: {
   token?: NFT
-  originImgSrc: string
+  originMediaSrc?: string
   app?: string
   username?: string
+  relatedAddress?: string
+  expand?: boolean
+  cancelDao?: boolean
 }) {
+  const {
+    token,
+    originMediaSrc,
+    app,
+    username,
+    relatedAddress,
+    expand,
+    cancelDao
+  } = props
   const [isInFav, setIsInFav] = useState(false)
   const [mintLoading, setMintLoading] = useState(false)
   const [showMenuMore, setShowMenuMore] = useState(false)
@@ -55,35 +67,38 @@ function InlineTokenToolbar(props: {
   const [address, setAddress] = useState('')
   const [collectionDao, setCollectionDao] = useState<CollectionDao>()
   const [proposalModalShow, setProposalModalShow] = useState(false)
-  const { token, app, username } = props
 
   const isOwner = useMemo(() => {
     if (
-      username &&
-      app &&
-      ownerAccount.find(
-        (item) => item.appid === username && item.application === app
-      )
+      (username &&
+        app &&
+        ownerAccount.find(
+          (item) => item.appid === username && item.application === app
+        )) ||
+      (relatedAddress &&
+        ownerAccount.find((item) => item.address === relatedAddress))
     ) {
       return true
     } else {
       return false
     }
-  }, [username, ownerAccount])
+  }, [username, ownerAccount, relatedAddress])
 
   const isMinter = useMemo(() => {
     if (
-      username &&
-      app &&
-      minterAccount.find(
-        (item) => item.appid === username && item.application === app
-      )
+      (username &&
+        app &&
+        minterAccount.find(
+          (item) => item.appid === username && item.application === app
+        )) ||
+      (relatedAddress &&
+        minterAccount.find((item) => item.address === relatedAddress))
     ) {
       return true
     } else {
       return false
     }
-  }, [minterAccount, username])
+  }, [minterAccount, username, relatedAddress])
 
   const isBothMinterOwner = useMemo(() => {
     return isOwner && isMinter
@@ -91,11 +106,14 @@ function InlineTokenToolbar(props: {
 
   const fetchInfo = async () => {
     let role: { owner?: string; minter?: string }
-    if (!token.owner) {
-      role = await getRole({ token })
-      token.owner = role.owner
-      token.minter = role.minter
-    }
+    setOwnerAccount([])
+    setMinterAccount([])
+
+    // if (!token.owner || !token.minter) {
+    role = await getRole({ token })
+    token.owner = role.owner
+    token.minter = role.minter
+    // }
 
     const ownerBindResult =
       (await getBindResult({
@@ -116,7 +134,7 @@ function InlineTokenToolbar(props: {
     ;(async () => {
       const address = await getAddress()
       setAddress(address)
-      if (props.token) {
+      if (token) {
         fetchInfo()
         const favTokens = await getFavTokens({
           address,
@@ -124,14 +142,19 @@ function InlineTokenToolbar(props: {
           contract: token.contract
         })
         if (
-          favTokens.data.some((item) => '' + item.tokenId === token.tokenId)
+          favTokens.data.some(
+            (item) => (item.tokenId as string) == (token.tokenId as string)
+          )
         ) {
           setIsInFav(true)
+        } else {
+          setIsInFav(false)
         }
-        fetchCollectionInfo()
+        if (!cancelDao) fetchCollectionInfo()
+        if (expand) setShowMenuMore(true)
       }
     })()
-  }, [props.token])
+  }, [token])
 
   const getWeb2UserHomepage = async (data: BindInfo[]) => {
     let uri = ''
@@ -179,25 +202,41 @@ function InlineTokenToolbar(props: {
       message.warning('Wallet not found. Please install metamask.')
       return
     }
+    if (!originMediaSrc) {
+      message.warning(
+        'No media source found. Please verify the source is available.'
+      )
+      return
+    }
     setMintLoading(true)
-    const response = await mintAndShare(props.originImgSrc)
+    const response = await mintAndShare(originMediaSrc)
     setMintLoading(false)
     if (response.error) {
       return
     }
-    newPostTrigger(app)
-    // await pasteShareTextToEditor(app)
+    try {
+      newPostTrigger(app)
+      // await pasteShareTextToEditor(app)
+    } catch (e) {
+      console.error(
+        '[core-ui] InlineTokenToolbar handleMint newPostTrigger: ' + e
+      )
+    }
   }
 
-  const handleShare = async () => {
+  const handleShare = async (app: string) => {
     //TODO, temp save
     const mask = generateTokenMask(token)
     await saveLocal(StorageKeys.SHARING_NFT_META, mask)
     // FIXME: hardcode for now
-    const targetUrl = window.location.href.includes('twitter')
-      ? 'https://www.facebook.com'
-      : 'https://twitter.com'
-    window.open(targetUrl, '_blank')
+    switch (app) {
+      case 'Twitter':
+        window.open('https://twitter.com', '__twitter__')
+        break
+      case 'Facebook':
+        window.open('https://www.facebook.com', '__facebook__')
+        break
+    }
   }
 
   const shareContent = () => (
@@ -205,13 +244,13 @@ function InlineTokenToolbar(props: {
       <ul>
         <li>
           <IconShareTwitter
-            onClick={handleShare}
+            onClick={() => handleShare('Twitter')}
             disabled={window.location.href.includes('twitter')}
           />
         </li>
         <li>
           <IconShareFB
-            onClick={handleShare}
+            onClick={() => handleShare('Facebook')}
             disabled={window.location.href.includes('facebook')}
           />
         </li>
