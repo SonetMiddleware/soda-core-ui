@@ -30,7 +30,7 @@ function ResourceDialog(props: IProps) {
 
   useEffect(() => {
     PubSub.subscribe(Messages.PLAT_TWIN_OPEN, (msg, data) => {
-      console.log(msg, data)
+      console.debug('[core-ui] subscribe PLAT_TWIN_OPEN: ', msg, data)
       setShow(true)
     })
   }, [])
@@ -38,7 +38,7 @@ function ResourceDialog(props: IProps) {
   useEffect(() => {
     if (show) {
       ref.current?.click()
-      console.log('document hasFocus: ', document.hasFocus())
+      console.debug('[core-ui] document hasFocus: ', document.hasFocus())
     }
   }, [address, show])
 
