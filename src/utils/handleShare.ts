@@ -4,7 +4,7 @@ import { getLocal, removeLocal, StorageKeys } from './storage'
 import { shareByToken } from './token'
 
 export const pasteShareTextToEditor = async (app: string, str?: string) => {
-  return appInvoke(app, 'pasteShareTextToEditor', { str })
+  return appInvoke(app, 'pasteShareTextToEditor', str)
 }
 export const newPostTrigger = async (app: string) => {
   return appInvoke(app, 'newPostTrigger')
@@ -37,21 +37,28 @@ export const postShareHandler = async (app: string) => {
     const token = await decodeMask(meta || '')
     if (token) {
       newPostTrigger(app)
-      // 触发document focus
+      message.info('Create new post ...')
+      // trigger document focus
       document.body.click()
 
       await pasteShareTextToEditor(app)
       // clear clipboard
       navigator.clipboard.writeText('')
-      shareByToken(token)
+
+      message.info('Loading token media ...')
+      await shareByToken(token)
 
       message.success(
-        'The resource has been saved to the clipboard. Paste to proceed share.'
+        'The media resource has been saved to the clipboard. Paste to proceed share.'
       )
 
       await removeLocal(StorageKeys.SHARING_NFT_META)
     }
   } catch (err) {
+    message.error(
+      'Share token failed, please verify your chain settings and retry later.'
+    )
     console.error('[core-ui] postShareHandler: ', err)
+    await removeLocal(StorageKeys.SHARING_NFT_META)
   }
 }

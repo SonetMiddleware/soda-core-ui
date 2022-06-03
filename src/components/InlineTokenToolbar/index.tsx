@@ -15,7 +15,8 @@ import {
   appInvoke,
   AppFunction,
   getCollectionDaoByToken,
-  getInlineMarketplace
+  getInlineMarketplace,
+  getChainId
 } from '@soda/soda-core'
 import { Popover, message, Button } from 'antd'
 import { ArrowRightOutlined } from '@ant-design/icons'
@@ -65,6 +66,7 @@ function InlineTokenToolbar(props: {
   const [minterAccount, setMinterAccount] = useState<BindInfo[]>([])
   const [ownerAccount, setOwnerAccount] = useState<BindInfo[]>([])
   const [address, setAddress] = useState('')
+  const [chainId, setChainId] = useState(1)
   const [collectionDao, setCollectionDao] = useState<CollectionDao>()
   const [proposalModalShow, setProposalModalShow] = useState(false)
 
@@ -100,10 +102,6 @@ function InlineTokenToolbar(props: {
     }
   }, [minterAccount, username, relatedAddress])
 
-  const isBothMinterOwner = useMemo(() => {
-    return isOwner && isMinter
-  }, [isOwner, isMinter])
-
   const fetchInfo = async () => {
     let role: { owner?: string; minter?: string }
     setOwnerAccount([])
@@ -134,6 +132,8 @@ function InlineTokenToolbar(props: {
     ;(async () => {
       const address = await getAddress()
       setAddress(address)
+      const chainId = await getChainId()
+      setChainId(chainId)
       if (token) {
         fetchInfo()
         const favTokens = await getFavTokens({
@@ -343,7 +343,7 @@ function InlineTokenToolbar(props: {
                 </div>
               </Popover>
             )}
-            {token && (
+            {token && chainId == token.chainId && (
               <Popover
                 placement="bottom"
                 title={'Share'}
@@ -365,7 +365,7 @@ function InlineTokenToolbar(props: {
               </Popover>
             }
 
-            {address && token && !isInFav && (
+            {token && chainId == token.chainId && address && !isInFav && (
               <Popover content="Add to fav">
                 <div className="toolbar-icon" onClick={handleAddToFav}>
                   <img src={IconFav} alt="" />
@@ -373,28 +373,34 @@ function InlineTokenToolbar(props: {
               </Popover>
             )}
 
-            {!isBothMinterOwner && !isOwner && ownerAccount.length > 0 && (
-              <Popover content="View owner">
-                <div className="toolbar-icon" onClick={handleToOwnerWeb2}>
-                  <img src={IconOwner} alt="" />
-                </div>
-              </Popover>
-            )}
-            {!isBothMinterOwner && !isMinter && minterAccount.length > 0 && (
-              <Popover content="View minter">
-                <div className="toolbar-icon" onClick={handleToMinterWeb2}>
-                  <img src={IconMinter} alt="" />
-                </div>
-              </Popover>
-            )}
-            {collectionDao && (
+            {token &&
+              chainId == token.chainId &&
+              !isOwner &&
+              ownerAccount.length > 0 && (
+                <Popover content="View owner">
+                  <div className="toolbar-icon" onClick={handleToOwnerWeb2}>
+                    <img src={IconOwner} alt="" />
+                  </div>
+                </Popover>
+              )}
+            {token &&
+              chainId == token.chainId &&
+              !isMinter &&
+              minterAccount.length > 0 && (
+                <Popover content="View minter">
+                  <div className="toolbar-icon" onClick={handleToMinterWeb2}>
+                    <img src={IconMinter} alt="" />
+                  </div>
+                </Popover>
+              )}
+            {token && chainId == token.chainId && collectionDao && (
               <Popover content="DAO">
                 <div className="toolbar-icon" onClick={handleToDaoPage}>
                   <img src={IconDao} alt="" />
                 </div>
               </Popover>
             )}
-            {collectionDao && (
+            {token && chainId == token.chainId && collectionDao && (
               <Popover content="Proposal">
                 <div className="toolbar-icon" onClick={handleToProposal}>
                   <img src={IconProposal} alt="" />
@@ -403,21 +409,21 @@ function InlineTokenToolbar(props: {
             )}
           </div>
         )}
-        {!isBothMinterOwner && isOwner && (
+        {!isMinter && isOwner && (
           <Popover content="This is the owner">
             <div className="toolbar-icon" onClick={handleToOwnerWeb2}>
               <img src={IconOwnerRole} alt="" />
             </div>
           </Popover>
         )}
-        {!isBothMinterOwner && isMinter && (
+        {!isOwner && isMinter && (
           <Popover content="This is the minter">
             <div className="toolbar-icon" onClick={handleToMinterWeb2}>
               <img src={IconMinterRole} alt="" />
             </div>
           </Popover>
         )}
-        {isBothMinterOwner && (
+        {isOwner && isMinter && (
           <Popover content="This is the minter & owner">
             <div className="toolbar-icon" onClick={handleToMinterWeb2}>
               <img src={IconMinterOwner} />

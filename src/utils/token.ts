@@ -9,6 +9,7 @@ import {
 import { message } from 'antd'
 
 export const shareByToken = async (token: NFT) => {
+  // handle error outside this func
   const imgDataBlob = await getCacheMedia({
     token,
     storageConfig: {
