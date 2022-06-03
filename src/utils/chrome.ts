@@ -19,7 +19,7 @@ export const openExtensionPage = (uri: string) => {
 }
 
 async function openExtensionPageMessageHandler(request: any) {
-  const { uri } = request.request
+  const { uri } = request
   const response: any = {}
   try {
     chrome.tabs.query({}, function (tabs: any) {
@@ -45,7 +45,7 @@ async function openExtensionPageMessageHandler(request: any) {
     response.result = true
   } catch (e) {
     console.error(e)
-    response.error = e
+    response.error = (e as any).message || e
   }
   return response
 }

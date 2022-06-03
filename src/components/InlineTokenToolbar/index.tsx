@@ -189,8 +189,12 @@ function InlineTokenToolbar(props: {
   }
   const handleToSource = async (e) => {
     e.stopPropagation()
-    const source = await getTokenSource(token)
-    window.open(source, '_blank')
+    try {
+      const source = await getTokenSource({ token })
+      window.open(source, '_blank')
+    } catch (e) {
+      console.error('[core-ui] InlineTokenToolbar handleToSource: ', e)
+    }
   }
   const handleToMarket = async (e) => {
     e.stopPropagation()

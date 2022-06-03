@@ -16,7 +16,7 @@ export default (props: IProps) => {
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
-  const [favNFTs, setFavNFTs] = useState<NFT[]>([])
+  const [favTokens, setFavTokens] = useState<NFT[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [selectedImg, setSelectedImg] = useState<number>()
 
@@ -29,7 +29,7 @@ export default (props: IProps) => {
         limit: PAGE_SIZE
       })
       setTotal(nfts.total)
-      const _nfts = []
+      const _tokens = []
       for (const item of nfts.data) {
         try {
           const token = await getRole({ token: item })
@@ -37,12 +37,12 @@ export default (props: IProps) => {
           item.minter = minter
           item.owner = owner
         } catch (e) {}
-        _nfts.push({ ...item })
+        _tokens.push({ ...item })
       }
-      console.debug('[core-ui] FavTokenList getFavTokens: ', _nfts)
+      console.debug('[core-ui] FavTokenList getFavTokens: ', _tokens)
       setLoading(false)
-      setFavNFTs([])
-      setFavNFTs([..._nfts])
+      setFavTokens([])
+      setFavTokens(_tokens)
       setPage(currentPage)
     }
   }
@@ -55,7 +55,7 @@ export default (props: IProps) => {
     if (selectedImg !== undefined) {
       try {
         setSubmitting(true)
-        const selectedObj = favNFTs[selectedImg]
+        const selectedObj = favTokens[selectedImg]
         await shareByCacheInfo({
           chainId: selectedObj.chainId,
           tokenId: '' + selectedObj.tokenId,
@@ -114,7 +114,7 @@ export default (props: IProps) => {
             setSelectedImg(e.target.value)
           }}
           value={selectedImg}>
-          {favNFTs.map((item, index) => (
+          {favTokens.map((item, index) => (
             <Radio value={index} key={item.source} className="custom-radio">
               <div className="item-detail">
                 <MediaCacheDisplay className="img-item" token={item} />

@@ -14,7 +14,7 @@ interface IProps {
 const PAGE_SIZE = 9
 export default (props: IProps) => {
   const { address, app, publishFunc } = props
-  const [ownedNFTs, setOwnedNFTs] = useState<NFT[]>([])
+  const [ownedTokens, setOwnedTokens] = useState<NFT[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedImg, setSelectedImg] = useState<number>()
   const [page, setPage] = useState(1)
@@ -26,15 +26,15 @@ export default (props: IProps) => {
       if (address) {
         try {
           setLoading(true)
-          const nfts = await getOwnedTokens({
+          const _tokens = await getOwnedTokens({
             address,
             offset: (page - 1) * PAGE_SIZE,
             limit: PAGE_SIZE
           })
-          console.debug('[core-ui] fetchOwnedList: ', nfts)
-          setOwnedNFTs([])
-          setOwnedNFTs(nfts.data)
-          setTotal(nfts.total)
+          console.debug('[core-ui] fetchOwnedList: ', _tokens)
+          setOwnedTokens([])
+          setOwnedTokens(_tokens.data)
+          setTotal(_tokens.total)
           setPage(page)
           setLoading(false)
         } catch (err) {
@@ -53,7 +53,7 @@ export default (props: IProps) => {
     if (selectedImg !== undefined) {
       try {
         setSubmitting(true)
-        const selectedObj = ownedNFTs[selectedImg]
+        const selectedObj = ownedTokens[selectedImg]
         await shareByCacheInfo({
           tokenId: '' + selectedObj.tokenId,
           contract: selectedObj.contract
@@ -89,7 +89,7 @@ export default (props: IProps) => {
             setSelectedImg(e.target.value)
           }}
           value={selectedImg}>
-          {ownedNFTs.map((item, index) => (
+          {ownedTokens.map((item, index) => (
             <Radio value={index} key={item.source} className="custom-radio">
               <div className="item-detail">
                 <MediaCacheDisplay className="img-item" token={item} />
