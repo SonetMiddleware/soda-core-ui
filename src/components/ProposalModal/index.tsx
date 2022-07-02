@@ -15,6 +15,8 @@ import {
 import ProposalDetailDialog from '../ProposalDetailDialog'
 import CommonBtn from '../Button'
 import { openExtensionPage } from '@/utils/chrome'
+import IconFB from '../../assets/images/icon-facebook-gray.svg'
+import IconTwitter from '../../assets/images/icon-twitter-gray.svg'
 interface IProps {
   show: boolean
   onClose: () => void
@@ -100,23 +102,37 @@ export default (props: IProps) => {
             </div>
             <div className="dao-detail-info">
               <p className="dao-info-item">
-                <span className="label">Create date</span>
+                <span className="label">Date Created</span>
                 <span className="value">
                   {formatDate(currentDao?.startDate)}
                 </span>
               </p>
-              <p className="dao-info-item">
+              {/* <p className="dao-info-item">
                 <span className="label">Total members</span>
                 <span className="value">{currentDao?.totalMember}</span>
-              </p>
+              </p> */}
               <p className="dao-info-item">
-                <span className="label">Twitter account</span>
-                <span className="value">{currentDao?.accounts.twitter}</span>
+                <img src={IconTwitter} alt="" />
+                <a
+                  className="value"
+                  href={`https://twitter.com/${currentDao?.accounts.twitter}`}
+                  target="_blank"
+                  rel="noreferrer">
+                  {currentDao?.accounts.twitter}
+                </a>
               </p>
-              <p className="dao-info-item">
-                <span className="label">Facebook account</span>
-                <span className="value">{currentDao?.accounts.facebook}</span>
-              </p>
+              {currentDao?.accounts.facebook && (
+                <p className="dao-info-item">
+                  <img src={IconFB} alt="" />
+                  <a
+                    className="value"
+                    href={`https://facebook.com/${currentDao?.accounts.facebook}`}
+                    target="_blank"
+                    rel="noreferrer">
+                    {currentDao?.accounts.facebook}
+                  </a>
+                </p>
+              )}
             </div>
           </div>
           <div className="proposal-list-container">

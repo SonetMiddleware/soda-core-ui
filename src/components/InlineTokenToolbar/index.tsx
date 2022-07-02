@@ -267,10 +267,10 @@ function InlineTokenToolbar(props: {
       const address = await getAddress()
       await addTokenToFav({ address, token })
       setIsInFav(true)
-      message.success('Add to favorite successful!')
+      message.success('Added to favorites successful!')
     } catch (err) {
       console.error(err)
-      message.error('Add to favorite failed.')
+      message.error('Added to favorites failed.')
     }
   }
 
@@ -281,7 +281,7 @@ function InlineTokenToolbar(props: {
 
   const handleToDaoPage = async (e: any) => {
     e.stopPropagation()
-    openExtensionPage(`daoDetail?dao=${collectionDao.collection.id}`)
+    openExtensionPage(`daoDetailWithId?dao=${collectionDao.collection.id}`)
   }
 
   const onCloseProposalModal = () => {
