@@ -55,7 +55,6 @@ export default function InlineApplicationBindBox(props: IProps) {
         address,
         appid
       })
-      debugger
       const _binding = bindResult.find((item) => item.application === app)
       setBinding(_binding)
       if (_binding && _binding.contentId) {
