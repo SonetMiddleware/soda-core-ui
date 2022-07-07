@@ -1,7 +1,6 @@
 import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 import resolve from '@rollup/plugin-node-resolve'
 export default {
-  entry: 'src/utils/eventDispatch.ts',
   esm: {
     type: 'rollup'
   },
