@@ -17,7 +17,11 @@ import {
   POST_SHARE_TEXT,
   postShareHandler
 } from './utils/handleShare'
-import { dispatchPaste } from './utils/eventDispatch'
+import {
+  dispatchPaste,
+  pasteImageToActiveElements,
+  init as eventListenerInit
+} from './utils/eventDispatch'
 import { mint } from './utils/token'
 
 export {
@@ -31,6 +35,8 @@ export {
   postShareHandler,
   removeTextInSharePost,
   dispatchPaste,
+  pasteImageToActiveElements,
+  eventListenerInit,
   Button,
   MediaCacheDisplay,
   InlineTokenToolbar,

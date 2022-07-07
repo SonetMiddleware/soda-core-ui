@@ -8,7 +8,7 @@ import { mintAndShare } from '@/utils/token'
 interface IProps {
   address: string
   app: string
-  publishFunc?: () => void
+  publishFunc?: (str: string, img?: Blob) => void
 }
 export default (props: IProps) => {
   const { address, app, publishFunc } = props
@@ -46,7 +46,7 @@ export default (props: IProps) => {
         }
         //add to fav
         await addTokenToFav({ address, token: response.token })
-        publishFunc()
+        publishFunc('')
         setSubmitting(false)
         // await pasteShareTextToEditor(app);
       } else {

@@ -9,7 +9,7 @@ import { shareByCacheInfo } from '@/utils/token'
 interface IProps {
   address: string
   app: string
-  publishFunc?: () => void
+  publishFunc?: (str: string, img?: Blob) => void
 }
 const PAGE_SIZE = 9
 export default (props: IProps) => {
@@ -54,7 +54,7 @@ export default (props: IProps) => {
       try {
         setSubmitting(true)
         const selectedObj = ownedTokens[selectedImg]
-        await shareByCacheInfo({
+        const res = await shareByCacheInfo({
           tokenId: '' + selectedObj.tokenId,
           contract: selectedObj.contract
         })
@@ -64,7 +64,7 @@ export default (props: IProps) => {
         )
         setSubmitting(false)
         // await pasteShareTextToEditor(app);
-        publishFunc && publishFunc()
+        publishFunc && publishFunc('')
       } catch (err) {
         console.error('[core-ui] OwnedTokenList handleFinish: ', err)
         setSubmitting(false)

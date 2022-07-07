@@ -1,7 +1,61 @@
+export const CustomEventId = 'abcf4ff0ce64-6fea93e2-1ce4-442f-b2f9'
+function factory<T extends string | ArrayBuffer>(
+  method: 'ArrayBuffer' | 'BinaryString' | 'DataURL' | 'Text'
+) {
+  return (blob: Blob) => {
+    return new Promise<T>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.addEventListener('error', () => {
+        reject(reader.error)
+      })
+      reader.addEventListener('load', () => {
+        resolve(reader.result as T)
+      })
+      reader[`readAs${method}`](blob)
+    })
+  }
+}
+
+export const blobToArrayBuffer = factory<ArrayBuffer>('ArrayBuffer')
+
 /* eslint-disable new-cap */
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable prefer-destructuring */
 /* eslint-disable no-restricted-syntax */
+
+export function overwriteFunctionOnXRayObject<T extends object>(
+  xrayed_object: T,
+  defineAs: keyof T,
+  apply: (target: any, thisArg: any, argArray?: any) => any
+) {
+  try {
+    if (_XPCNativeWrapper) {
+      const rawObject = _XPCNativeWrapper.unwrap(xrayed_object)
+      const rawFunction = rawObject[defineAs]
+      exportFunction(
+        function (this: any) {
+          return apply(rawFunction, this, arguments)
+        },
+        rawObject,
+        { defineAs }
+      )
+      return
+    }
+  } catch {
+    console.error('Redefine failed.')
+  }
+  xrayed_object[defineAs] = new Proxy(xrayed_object[defineAs], { apply })
+}
+export function redefineEventTargetPrototype<K extends keyof EventTarget>(
+  defineAs: K,
+  apply: NonNullable<ProxyHandler<EventTarget[K]>['apply']>
+) {
+  overwriteFunctionOnXRayObject(
+    globalThis.window.EventTarget.prototype,
+    defineAs,
+    apply
+  )
+}
 
 /* eslint-disable @typescript-eslint/no-use-before-define */
 export const dispatchPasteImgEvent = async (img: File | Blob) => {
@@ -44,6 +98,39 @@ export const dispatchPasteImgEvent = async (img: File | Blob) => {
   nativeEditor.focus()
   nativeEditor.dispatchEvent(e)
 }
+
+const CapturingEvents: Set<string> = new Set([
+  'keyup',
+  'input',
+  'paste'
+] as (keyof DocumentEventMap)[])
+
+//#region instincts
+const { apply } = Reflect
+const { error, warn } = console
+// The "window."" here is used to create a un-xrayed Proxy on Firefox
+const un_xray_Proxy = globalThis.window.Proxy
+const input_value_setter = Object.getOwnPropertyDescriptor(
+  HTMLInputElement.prototype,
+  'value'
+)?.set!
+const textarea_value_setter = Object.getOwnPropertyDescriptor(
+  HTMLTextAreaElement.prototype,
+  'value'
+)?.set!
+//#endregion
+
+//#region helpers
+type EventListenerDescriptor = {
+  once: boolean
+  passive: boolean
+  capture: boolean
+}
+const CapturedListeners = new WeakMap<
+  Node | Document,
+  Map<string, Map<EventListener, EventListenerDescriptor>>
+>()
+//#endregion
 
 const _XPCNativeWrapper =
   typeof XPCNativeWrapper === 'undefined' ? undefined : XPCNativeWrapper
@@ -127,11 +214,83 @@ export interface CustomEvents {
   instagramUpload: [url: string]
 }
 
+const { includes } = String.prototype
+
+function isTwitter() {
+  return apply(includes, window.location.href, ['twitter.com'])
+}
+
 function dispatchEventRaw<T extends Event>(
   target: Node | Document | null,
   eventBase: T,
   overwrites: Partial<T> = {}
-) {}
+) {
+  let currentTarget: null | Node | Document = target
+  const event = getMockedEvent(
+    eventBase,
+    () => (isTwitter() ? target! : currentTarget!),
+    overwrites
+  )
+  // Note: in firefox, "event" is "Opaque". Displayed as an empty object.
+  const type = eventBase.type
+  if (!CapturingEvents.has(type))
+    return warn("!!!! You're capturing an event that didn't captured. !!!!")
+
+  const bubblingNode = bubble()
+  console.log('bubblingNode: ', bubblingNode)
+  for (const Node of bubblingNode) {
+    // TODO: implement
+    // Event.prototype.stopPropagation
+    // Event.prototype.stopImmediatePropagation
+    // Event.prototype.composedPath
+    // capture event
+    // once event
+    // passive event
+    const listeners = CapturedListeners.get(Node)?.get(type)
+    if (!listeners) continue
+    for (const [f, { capture, once, passive }] of listeners) {
+      if (capture) continue
+      try {
+        f(event)
+      } catch (e) {
+        error(e)
+      }
+    }
+  }
+  function* bubble() {
+    while (currentTarget) {
+      yield currentTarget
+      currentTarget = currentTarget.parentNode
+    }
+    yield document
+    yield window as unknown as Node
+  }
+  function getMockedEvent<T extends Event>(
+    event: T,
+    currentTarget: () => EventTarget,
+    overwrites: Partial<T> = {}
+  ) {
+    const target = un_xray_DOM(currentTarget())
+    const source = {
+      target,
+      srcElement: target,
+      // ? Why ?
+      _inherits_from_prototype: true,
+      defaultPrevented: false,
+      preventDefault: clone_into(() => {}),
+      ...overwrites
+    }
+    return new un_xray_Proxy(
+      event,
+      clone_into({
+        get(target, key) {
+          if (key === 'currentTarget') return un_xray_DOM(currentTarget())
+          return (source as any)[key] ?? (un_xray_DOM(target) as any)[key]
+        }
+      })
+    )
+  }
+}
 
 export function dispatchPaste(textOrImage: CustomEvents['paste'][0]) {
   console.debug('[core-ui] eventDispatch, dispatchPaste ........')
@@ -163,4 +322,126 @@ export function dispatchPaste(textOrImage: CustomEvents['paste'][0]) {
     console.error(error)
     throw error
   }
+}
+
+/**
+ * Dispatch a fake event.
+ * @param element The event target
+ * @param event Event name
+ * @param x parameters
+ */
+export function dispatchCustomEvents<T extends keyof CustomEvents>(
+  element: Element | Document | null = document,
+  event: T,
+  ...x: CustomEvents[T]
+) {
+  document.dispatchEvent(
+    new CustomEvent(CustomEventId, { detail: JSON.stringify([event, x]) })
+  )
+}
+
+/**
+ * paste image to activeElements
+ * @param image
+ */
+export async function pasteImageToActiveElements(
+  image: File | Blob
+): Promise<void> {
+  const bytes = new Uint8Array(await blobToArrayBuffer(image))
+  dispatchCustomEvents(document.activeElement, 'paste', {
+    type: 'image',
+    value: Array.from(bytes)
+  })
+}
+function dispatchInput(text: CustomEvents['input'][0]) {
+  // Cause react hooks the input.value getter & setter, set hooked version will notify react **not** call the onChange callback.
+  {
+    let setter = (_value: string) =>
+      warn('Unknown active element type', document.activeElement)
+    if (document.activeElement instanceof HTMLInputElement)
+      setter = input_value_setter
+    else if (document.activeElement instanceof HTMLTextAreaElement)
+      setter = textarea_value_setter
+    apply(setter, document.activeElement, [text])
+  }
+  dispatchEventRaw(
+    document.activeElement,
+    new globalThis.window.InputEvent(
+      'input',
+      clone_into({ inputType: 'insertText', data: text })
+    )
+  )
+}
+
+export const init = () => {
+  document.addEventListener(CustomEventId, (e) => {
+    console.log('[soda-core-ui] listening events: ', e)
+    const ev = e as CustomEvent<string>
+    const [eventName, param, selector]: [keyof CustomEvents, any[], string] =
+      JSON.parse(ev.detail)
+    switch (eventName) {
+      case 'input':
+        return apply(dispatchInput, null, param)
+      case 'paste':
+        return apply(dispatchPaste, null, param)
+      default:
+        warn(eventName, 'not handled')
+    }
+  })
+  console.log('[soda-core-ui] <<<<<<<<<<<<<<<<<<<')
+  //#region Overwrite EventTarget.prototype.*
+  redefineEventTargetPrototype(
+    'addEventListener',
+    (raw, _this: Node, args: Parameters<EventTarget['addEventListener']>) => {
+      const result = apply(raw, _this, args)
+      if (!CapturingEvents.has(args[0])) return result
+      const { f, type, ...desc } = normalizeAddEventListenerArgs(args)
+      if (CapturingEvents.has(type)) {
+        if (!CapturedListeners.has(_this))
+          CapturedListeners.set(_this, new Map())
+        const map = CapturedListeners.get(_this)!
+        if (!map.has(type)) map.set(type, new Map())
+        const map2 = map.get(type)!
+        map2.set(f, desc)
+        console.log('[soda-core-ui]>>>>> ', _this, type)
+      }
+      return result
+    }
+  )
+  redefineEventTargetPrototype(
+    'removeEventListener',
+    (
+      raw,
+      _this: Node,
+      args: Parameters<EventTarget['removeEventListener']>
+    ) => {
+      const result = apply(raw, _this, args)
+      if (!CapturingEvents.has(args[0])) return result
+      const { type, f } = normalizeAddEventListenerArgs(args)
+      CapturedListeners.get(_this)?.get(type)?.delete(f)
+      return result
+    }
+  )
+
+  function normalizeAddEventListenerArgs(
+    args: Parameters<EventTarget['addEventListener']>
+  ): EventListenerDescriptor & { type: string; f: EventListener } {
+    const [type, listener, options] = args
+    let f: EventListener = () => {}
+    if (typeof listener === 'function') f = listener
+    else if (typeof listener === 'object')
+      f = listener?.handleEvent.bind(listener) as any
+
+    let capture = false
+    if (typeof options === 'boolean') capture = options
+    else if (typeof options === 'object') capture = options?.capture ?? false
+
+    let passive = false
+    if (typeof options === 'object') passive = options?.passive ?? false
+
+    let once = false
+    if (typeof options === 'object') once = options?.once ?? false
+    return { type, f, once, capture, passive }
+  }
+  //#endregion
 }

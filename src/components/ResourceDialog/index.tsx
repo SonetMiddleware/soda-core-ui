@@ -16,7 +16,7 @@ const { TabPane } = Tabs
 interface IProps {
   app: string
   onClose?: () => void
-  publishFunc: () => void | Promise<void>
+  publishFunc: (str: string, img?: Blob) => void | Promise<void>
 }
 function ResourceDialog(props: IProps) {
   const { app, onClose, publishFunc } = props
@@ -52,9 +52,9 @@ function ResourceDialog(props: IProps) {
     })()
   }, [])
 
-  const afterFavHandleFinish = () => {
+  const afterFavHandleFinish = (str: string, img?: Blob) => {
     setShow(false)
-    publishFunc && publishFunc()
+    publishFunc && publishFunc(str, img)
   }
 
   return (

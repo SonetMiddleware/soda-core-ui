@@ -8,7 +8,7 @@ import { shareByCacheInfo } from '@/utils/token'
 interface IProps {
   address: string
   app: string
-  publishFunc?: () => void
+  publishFunc?: (str: string, img?: Blob) => void
 }
 const PAGE_SIZE = 9
 export default (props: IProps) => {
@@ -56,14 +56,14 @@ export default (props: IProps) => {
       try {
         setSubmitting(true)
         const selectedObj = favTokens[selectedImg]
-        await shareByCacheInfo({
+        const res = await shareByCacheInfo({
           chainId: selectedObj.chainId,
           tokenId: '' + selectedObj.tokenId,
           contract: selectedObj.contract
         })
         setSubmitting(false)
         // setShow(false);
-        publishFunc()
+        publishFunc('')
         // await pasteShareTextToEditor(app)
       } catch (err) {
         console.error('[core-ui] FavTokenList handleFinish: ', err)
