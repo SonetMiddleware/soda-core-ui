@@ -403,7 +403,7 @@ export const init = () => {
         if (!map.has(type)) map.set(type, new Map())
         const map2 = map.get(type)!
         map2.set(f, desc)
-        console.log('[soda-core-ui]>>>>> ', _this, type)
+        console.log('[soda-core-ui] ', _this, type)
       }
       return result
     }

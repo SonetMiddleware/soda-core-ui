@@ -55,6 +55,7 @@ export default (props: IProps) => {
         setSubmitting(true)
         const selectedObj = ownedTokens[selectedImg]
         const res = await shareByCacheInfo({
+          chainId: selectedObj.chainId,
           tokenId: '' + selectedObj.tokenId,
           contract: selectedObj.contract
         })

@@ -63,7 +63,7 @@ export default (props: IProps) => {
       })
       const result = await voteProposal({
         voter: address,
-        daoId: collectionDao!.collection.id,
+        collectionId: collectionDao!.collection.id,
         proposalId: detail.id,
         item: vote,
         sig: res.result
