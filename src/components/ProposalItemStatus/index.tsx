@@ -12,9 +12,9 @@ export default (props: { status: ProposalStatusEnum }) => {
     } else if (status === ProposalStatusEnum.OPEN) {
       return 'Open'
     } else if (status === ProposalStatusEnum.VALID) {
-      return 'Valid'
+      return 'Closed'
     } else if (status === ProposalStatusEnum.INVALID) {
-      return 'Invalid'
+      return 'Failed'
     }
   }, [status])
 

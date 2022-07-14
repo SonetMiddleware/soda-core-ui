@@ -7,10 +7,9 @@ import {
   formatDate,
   getProposalList,
   getAddress,
-  getBalance,
   CollectionDao,
   Proposal,
-  getChainId
+  getDaoList
 } from '@soda/soda-core'
 import ProposalDetailDialog from '../ProposalDetailDialog'
 import CommonBtn from '../Button'
@@ -48,18 +47,13 @@ export default (props: IProps) => {
   const fetchUserInfo = async () => {
     const addr = await getAddress()
     setAddress(addr)
-    const chainId = await getChainId()
-    // get user nft balance
-    const balance = await getBalance({
-      cache: {
-        chainId,
-        // FIXME: one dao one collection only
-        contract: collectionDao.collection.id
-      },
-      address: addr
-    })
-    if (Number(balance) > 0) {
-      setInDao(true)
+    const res = await getDaoList({ address: addr })
+    const myDaos = res.data
+    for (const item of myDaos) {
+      if (item.id === currentDao?.id) {
+        setInDao(true)
+        return
+      }
     }
   }
 
