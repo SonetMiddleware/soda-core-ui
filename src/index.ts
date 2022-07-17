@@ -11,16 +11,16 @@ import OwnedTokenList from './components/ResourceDialog/OwnedTokenList'
 import UploadToken from './components/ResourceDialog/UploadToken'
 import { startWatch } from './utils/watcher'
 import { saveLocal, getLocal, removeLocal, StorageKeys } from './utils/storage'
-import { CustomEventId, dispatchCustomEvents } from './utils/common'
 import {
   removeTextInSharePost,
   POST_SHARE_TEXT,
   postShareHandler
 } from './utils/handleShare'
 import {
+  CustomEventId,
   dispatchPaste,
   pasteImageToActiveElements,
-  init as eventListenerInit
+  dispatchCustomEvents
 } from './utils/eventDispatch'
 import { mint } from './utils/token'
 
@@ -36,7 +36,6 @@ export {
   removeTextInSharePost,
   dispatchPaste,
   pasteImageToActiveElements,
-  eventListenerInit,
   Button,
   MediaCacheDisplay,
   InlineTokenToolbar,

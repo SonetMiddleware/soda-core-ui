@@ -40,14 +40,15 @@ export default (props: IProps) => {
       if (localImg && localImg[0]) {
         setSubmitting(true)
         let response = await mintAndShare(localImg[0])
+        debugger
         if (response.error) {
           setSubmitting(false)
           return
         }
-        //add to fav
-        await addTokenToFav({ address, token: response.token })
-        publishFunc('')
+        publishFunc('', response.blob)
         setSubmitting(false)
+        //add to fav
+        addTokenToFav({ address, token: response.token })
         // await pasteShareTextToEditor(app);
       } else {
         message.warning('Please select local image to mint your NFT')

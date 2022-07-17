@@ -63,7 +63,7 @@ export default (props: IProps) => {
         })
         setSubmitting(false)
         // setShow(false);
-        publishFunc('')
+        publishFunc('', res.blob)
         // await pasteShareTextToEditor(app)
       } catch (err) {
         console.error('[core-ui] FavTokenList handleFinish: ', err)

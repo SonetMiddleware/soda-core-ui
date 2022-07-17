@@ -65,7 +65,7 @@ export default (props: IProps) => {
         )
         setSubmitting(false)
         // await pasteShareTextToEditor(app);
-        publishFunc && publishFunc('')
+        publishFunc && publishFunc('', res.blob)
       } catch (err) {
         console.error('[core-ui] OwnedTokenList handleFinish: ', err)
         setSubmitting(false)

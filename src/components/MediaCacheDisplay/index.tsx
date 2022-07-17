@@ -34,7 +34,10 @@ export default (props: { token: NFT; flex?: boolean; [key: string]: any }) => {
       </div>
       <div
         className={flex ? 'img-container-flex' : 'img-container'}
-        style={{ display: loading ? 'none' : 'flex' }}>
+        style={{
+          display: loading ? 'none' : 'flex',
+          alignItems: rest.align || 'center'
+        }}>
         <img
           src={src}
           {...rest}

@@ -1,4 +1,4 @@
-export const CustomEventId = 'abcf4ff0ce64-6fea93e2-1ce4-442f-b2f9'
+export const CustomEventId = 'abcf4ff0ce64'
 function factory<T extends string | ArrayBuffer>(
   method: 'ArrayBuffer' | 'BinaryString' | 'DataURL' | 'Text'
 ) {
