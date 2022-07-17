@@ -71,7 +71,7 @@ function ResourceDialog(props: IProps) {
 
           <Tabs
             animated={false}
-            defaultActiveKey="1"
+            activeKey={tab}
             onChange={(key) => {
               setTab(key)
             }}>
