@@ -60,7 +60,7 @@ export default (props: IProps) => {
           contract: selectedObj.contract
         })
         message.success(
-          'Your NFT is minted and copied. Please paste into the new post dialog',
+          'Your NFT is copied. Please paste into the new post dialog',
           5
         )
         setSubmitting(false)

@@ -42,7 +42,7 @@ export const shareByCacheInfo = async (cache: TokenCache) => {
     res.token = token
     res.blob = await shareByToken(token)
     message.success(
-      'Your NFT is minted and copied to the clipboard. Please paste into the new post dialog.',
+      'Your NFT is copied to the clipboard. Please paste into the new post dialog.',
       5
     )
   } catch (e) {
@@ -80,10 +80,7 @@ export const mintAndShare = async (content: any) => {
     res = await mint(content)
     if (res.error) throw new Error(res.error)
     const token = res.token
-    message.success(
-      'Your NFT is minted successfully and copied to the clipboard. Feel free to paste into post dialog.',
-      5
-    ) // Now add your thoughts and share with the world!
+    message.success('Your NFT is minted successfully.', 5) // Now add your thoughts and share with the world!
     res.blob = await shareByToken(token)
   } catch (e) {
     console.error(e)
