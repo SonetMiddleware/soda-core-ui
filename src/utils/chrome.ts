@@ -1,8 +1,4 @@
-import {
-  sendMessage,
-  registerMessage,
-  isMetamaskConnected
-} from '@soda/soda-util'
+import { sendMessage, registerMessage } from '@soda/soda-util'
 
 const MessageTypes = {
   Open_OptionPage: 'Open_OptionPage'

@@ -7,8 +7,9 @@ import {
   NFT
 } from '@soda/soda-core'
 import { message } from 'antd'
+import { shareToEditor } from './handleShare'
 
-export const shareByToken = async (token: NFT) => {
+export const getTokenCacheMedia = async (token: NFT) => {
   // handle error outside this func
   const imgDataBlob = await getCacheMedia({
     token,
@@ -17,17 +18,9 @@ export const shareByToken = async (token: NFT) => {
     },
     withMask: true
   })
-  const clipboardData = []
-  //@ts-ignore
-  clipboardData.push(new ClipboardItem({ 'image/png': imgDataBlob }))
-  // trigger document focus
-  // ref.current?.click();
-  document.body.click()
-  //@ts-ignore
-  await navigator.clipboard.write(clipboardData)
-
   return imgDataBlob
 }
+
 export const shareByCacheInfo = async (cache: TokenCache) => {
   const res: any = {}
   try {
@@ -40,11 +33,7 @@ export const shareByCacheInfo = async (cache: TokenCache) => {
       }
     })
     res.token = token
-    res.blob = await shareByToken(token)
-    message.success(
-      'Your NFT is minted and copied to the clipboard. Please paste into the new post dialog.',
-      5
-    )
+    res.blob = await getTokenCacheMedia(token)
   } catch (e) {
     console.error(e)
     res.error = e
@@ -80,11 +69,8 @@ export const mintAndShare = async (content: any) => {
     res = await mint(content)
     if (res.error) throw new Error(res.error)
     const token = res.token
-    message.success(
-      'Your NFT is minted successfully and copied to the clipboard. Feel free to paste into post dialog.',
-      5
-    ) // Now add your thoughts and share with the world!
-    res.blob = await shareByToken(token)
+    message.success('Your NFT is minted successfully.')
+    res.blob = await getTokenCacheMedia(token)
   } catch (e) {
     console.error(e)
     res.error = e

@@ -11,15 +11,15 @@ import FavTokenList from './FavTokenList'
 import OwnedNFTList from './OwnedTokenList'
 import UploadNFT from './UploadToken'
 import { getCapableServiceNames } from '@soda/soda-core'
+import { POST_SHARE_TEXT } from '@/utils/handleShare'
 
 const { TabPane } = Tabs
 interface IProps {
-  app: string
   onClose?: () => void
-  publishFunc: (str: string, img?: Blob) => void | Promise<void>
+  shareCallback: (content?: Array<string | Blob>) => void | Promise<void>
 }
 function ResourceDialog(props: IProps) {
-  const { app, onClose, publishFunc } = props
+  const { onClose, shareCallback } = props
   const [show, setShow] = useState(false)
   const [address, setAddress] = useState('')
   const [chainId, setChainId] = useState(0)
@@ -52,9 +52,11 @@ function ResourceDialog(props: IProps) {
     })()
   }, [])
 
-  const afterFavHandleFinish = (str: string, img?: Blob) => {
+  const shareTokenCacheMedia = (img?: Blob) => {
     setShow(false)
-    publishFunc && publishFunc(str, img)
+    if (img) {
+      shareCallback && shareCallback([POST_SHARE_TEXT, img])
+    }
   }
 
   return (
@@ -83,22 +85,19 @@ function ResourceDialog(props: IProps) {
             {tab === '1' && (
               <FavTokenList
                 address={address}
-                app={app}
-                publishFunc={afterFavHandleFinish}
+                shareCallback={shareTokenCacheMedia}
               />
             )}
             {tab === '2' && (
               <UploadNFT
                 address={address}
-                app={app}
-                publishFunc={afterFavHandleFinish}
+                shareCallback={shareTokenCacheMedia}
               />
             )}
             {tab === '3' && (
               <OwnedNFTList
                 address={address}
-                app={app}
-                publishFunc={afterFavHandleFinish}
+                shareCallback={shareTokenCacheMedia}
               />
             )}
           </div>

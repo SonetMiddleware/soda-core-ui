@@ -1,5 +1,3 @@
-import CoreInit from '@soda/soda-core'
-
 import Button from './components/Button'
 import MediaCacheDisplay from './components/MediaCacheDisplay'
 import InlineTokenToolbar from './components/InlineTokenToolbar'
@@ -16,12 +14,6 @@ import {
   POST_SHARE_TEXT,
   postShareHandler
 } from './utils/handleShare'
-import {
-  CustomEventId,
-  dispatchPaste,
-  pasteImageToActiveElements,
-  dispatchCustomEvents
-} from './utils/eventDispatch'
 import { mint } from './utils/token'
 
 export {
@@ -30,12 +22,8 @@ export {
   getLocal,
   removeLocal,
   StorageKeys,
-  CustomEventId,
-  dispatchCustomEvents,
   postShareHandler,
   removeTextInSharePost,
-  dispatchPaste,
-  pasteImageToActiveElements,
   Button,
   MediaCacheDisplay,
   InlineTokenToolbar,

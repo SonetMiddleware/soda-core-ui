@@ -7,12 +7,11 @@ import MediaCacheDisplay from '../../MediaCacheDisplay'
 import { shareByCacheInfo } from '@/utils/token'
 interface IProps {
   address: string
-  app: string
-  publishFunc?: (str: string, img?: Blob) => void
+  shareCallback?: (img?: Blob) => void
 }
 const PAGE_SIZE = 9
 export default (props: IProps) => {
-  const { address, app, publishFunc } = props
+  const { address, shareCallback } = props
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
@@ -62,16 +61,17 @@ export default (props: IProps) => {
           contract: selectedObj.contract
         })
         setSubmitting(false)
-        // setShow(false);
-        publishFunc('', res.blob)
-        // await pasteShareTextToEditor(app)
+        if (res.error) {
+          message.error('Load resource error, please retry later.')
+        } else {
+          shareCallback && shareCallback(res.blob)
+        }
       } catch (err) {
         console.error('[core-ui] FavTokenList handleFinish: ', err)
         setSubmitting(false)
       }
     } else {
       message.warning('Please select one NFT')
-      return
     }
   }
 

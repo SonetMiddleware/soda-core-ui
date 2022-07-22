@@ -1,13 +1,19 @@
 import { appInvoke, decodeMask } from '@soda/soda-core'
 import { message } from 'antd'
 import { getLocal, removeLocal, StorageKeys } from './storage'
-import { shareByToken } from './token'
+import { getTokenCacheMedia } from './token'
 
-export const pasteShareTextToEditor = async (app: string, str?: string) => {
-  return appInvoke(app, 'pasteShareTextToEditor', str)
+export const shareToEditor = async (
+  app: string,
+  content?: Array<string | Uint8Array>
+) => {
+  return appInvoke(app, 'shareToEditor', content)
 }
-export const newPostTrigger = async (app: string) => {
-  return appInvoke(app, 'newPostTrigger')
+export const newPostTrigger = async (app: string, message?: string) => {
+  await appInvoke(app, 'newPostTrigger')
+  if (message) {
+    await shareToEditor(app, [message])
+  }
 }
 
 export const EXTENSION_LINK = 'https://s.plat.win?'
@@ -36,29 +42,23 @@ export const postShareHandler = async (app: string) => {
     if (!meta) return
     const token = await decodeMask(meta || '')
     if (token) {
-      newPostTrigger(app)
       message.info('Create new post ...')
-      // trigger document focus
-      document.body.click()
-
-      await pasteShareTextToEditor(app)
-      // clear clipboard
-      navigator.clipboard.writeText('')
+      newPostTrigger(app)
 
       message.info('Loading token media ...')
-      await shareByToken(token)
+      const img = await getTokenCacheMedia(token)
 
-      message.success(
-        'The media resource has been saved to the clipboard. Paste to proceed share.'
-      )
-
-      await removeLocal(StorageKeys.SHARING_NFT_META)
+      await shareToEditor(app, [POST_SHARE_TEXT, img])
+      message.success('Your is sharing NFT is ready to post.')
+    } else {
+      message.error('Share token failed, unable to parse token info.')
+      console.error(`[core-ui] postShareHandler: ${meta}`)
     }
   } catch (err) {
     message.error(
       'Share token failed, please verify your chain settings and retry later.'
     )
     console.error('[core-ui] postShareHandler: ', err)
-    await removeLocal(StorageKeys.SHARING_NFT_META)
   }
+  await removeLocal(StorageKeys.SHARING_NFT_META)
 }

@@ -7,11 +7,10 @@ import { mintAndShare } from '@/utils/token'
 
 interface IProps {
   address: string
-  app: string
-  publishFunc?: (str: string, img?: Blob) => void
+  shareCallback?: (img?: Blob) => void
 }
 export default (props: IProps) => {
-  const { address, app, publishFunc } = props
+  const { address, shareCallback } = props
   const [submitting, setSubmitting] = useState(false)
   const [localImg, setLocalImg] = useState<any>([])
   const ref = useRef<HTMLDivElement>(null)
@@ -39,17 +38,16 @@ export default (props: IProps) => {
     try {
       if (localImg && localImg[0]) {
         setSubmitting(true)
-        let response = await mintAndShare(localImg[0])
-        debugger
-        if (response.error) {
+        let res = await mintAndShare(localImg[0])
+        if (res.error) {
           setSubmitting(false)
           return
         }
-        publishFunc('', response.blob)
-        setSubmitting(false)
         //add to fav
-        addTokenToFav({ address, token: response.token })
-        // await pasteShareTextToEditor(app);
+        await addTokenToFav({ address, token: res.token })
+        setSubmitting(false)
+        // share
+        shareCallback && shareCallback(res.blob)
       } else {
         message.warning('Please select local image to mint your NFT')
         return
