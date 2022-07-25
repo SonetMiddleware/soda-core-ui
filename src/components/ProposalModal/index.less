@@ -77,8 +77,17 @@ html {
     > .proposal-list-container {
       flex: 1;
       > .proposal-list {
-        height: 400px;
+        height: 360px;
         overflow: auto;
+        width: 100%;
+        > div:last-child {
+          margin-bottom: 0;
+        }
+      }
+      > .list-pagination {
+        margin-top: 15px;
+        display: flex;
+        justify-content: flex-end;
       }
     }
   }

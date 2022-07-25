@@ -29,10 +29,12 @@ export const removeTextInSharePost = (dom: HTMLElement) => {
   })
   // text.replace(/\$\!.*\!\$/g, '');
   targetAs.forEach((item) => {
-    while (item.tagName !== 'DIV') {
+    while (item && item.tagName !== 'DIV') {
       item = item.parentElement
     }
-    item.innerText = item.innerText.replace(/\$\!.*\!\$/g, '')
+    if (item && item.innerText) {
+      item.innerText = item.innerText.replace(/\$\!.*\!\$/g, '')
+    }
   })
 }
 

@@ -146,6 +146,7 @@ export default (props: IProps) => {
             pageSize={PAGE_SIZE}
             onChange={handleChangePage}
             current={page}
+            showSizeChanger={false}
           />
         </div>
         <div className="list-footer">
