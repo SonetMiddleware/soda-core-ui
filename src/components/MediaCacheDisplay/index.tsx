@@ -33,24 +33,27 @@ export default (props: {
 
   return (
     <>
-      <div
+      {/* <div
         className="loading-container"
         style={{ display: loading ? 'flex' : 'none' }}>
         <LoadingOutlined style={{ fontSize: iconSize + 'px' }} />
-      </div>
+      </div> */}
       <div
         className={flex ? 'img-container-flex' : 'img-container'}
         style={{
-          display: loading ? 'none' : 'flex',
           alignItems: rest.align || 'center'
         }}>
-        <img
-          src={src}
-          {...rest}
-          onLoad={() => {
-            setLoading(false)
-          }}
-        />
+        {loading && <LoadingOutlined style={{ fontSize: iconSize + 'px' }} />}
+
+        <div style={{ display: loading ? 'none' : 'flex' }}>
+          <img
+            src={src}
+            {...rest}
+            onLoad={() => {
+              setLoading(false)
+            }}
+          />
+        </div>
       </div>
     </>
   )
