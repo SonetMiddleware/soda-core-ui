@@ -8,12 +8,11 @@ import { shareByCacheInfo } from '@/utils/token'
 
 interface IProps {
   address: string
-  app: string
-  publishFunc?: (str: string, img?: Blob) => void
+  shareCallback?: (img?: Blob) => void
 }
 const PAGE_SIZE = 9
 export default (props: IProps) => {
-  const { address, app, publishFunc } = props
+  const { address, shareCallback } = props
   const [ownedTokens, setOwnedTokens] = useState<NFT[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedImg, setSelectedImg] = useState<number>()
@@ -64,15 +63,17 @@ export default (props: IProps) => {
           5
         )
         setSubmitting(false)
-        // await pasteShareTextToEditor(app);
-        publishFunc && publishFunc('')
+        if (res.error) {
+          message.error('Load resource error, please retry later.')
+        } else {
+          shareCallback && shareCallback(res.blob)
+        }
       } catch (err) {
         console.error('[core-ui] OwnedTokenList handleFinish: ', err)
         setSubmitting(false)
       }
     } else {
       message.warning('Please select one NFT')
-      return
     }
   }
 
@@ -105,6 +106,7 @@ export default (props: IProps) => {
             pageSize={PAGE_SIZE}
             onChange={handleChangePage}
             current={page}
+            showSizeChanger={false}
           />
         </div>
         <div className="list-footer">

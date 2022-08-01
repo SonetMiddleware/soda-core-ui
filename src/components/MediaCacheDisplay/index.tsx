@@ -3,9 +3,14 @@ import { LoadingOutlined } from '@ant-design/icons'
 import './index.less'
 import { getCacheMedia, NFT } from '@soda/soda-core'
 
-export default (props: { token: NFT; flex?: boolean; [key: string]: any }) => {
+export default (props: {
+  token: NFT
+  flex?: boolean
+  iconSize?: number
+  [key: string]: any
+}) => {
   const [loading, setLoading] = useState(true)
-  const { token, flex, ...rest } = props
+  const { token, flex, iconSize = 14, ...rest } = props
   const [src, setSrc] = useState(token.source)
   useEffect(() => {
     ;(async () => {
@@ -17,6 +22,7 @@ export default (props: { token: NFT; flex?: boolean; [key: string]: any }) => {
           }
         })
         setSrc(source)
+        setLoading(true)
       } catch (e) {
         console.error(
           '[core-ui] MediaCacheDisplay get cache media source: ' + e
@@ -27,21 +33,27 @@ export default (props: { token: NFT; flex?: boolean; [key: string]: any }) => {
 
   return (
     <>
-      <div
+      {/* <div
         className="loading-container"
         style={{ display: loading ? 'flex' : 'none' }}>
-        <LoadingOutlined />
-      </div>
+        <LoadingOutlined style={{ fontSize: iconSize + 'px' }} />
+      </div> */}
       <div
         className={flex ? 'img-container-flex' : 'img-container'}
-        style={{ display: loading ? 'none' : 'flex' }}>
-        <img
-          src={src}
-          {...rest}
-          onLoad={() => {
-            setLoading(false)
-          }}
-        />
+        style={{
+          alignItems: rest.align || 'center'
+        }}>
+        {loading && <LoadingOutlined style={{ fontSize: iconSize + 'px' }} />}
+
+        <div style={{ display: loading ? 'none' : 'flex' }}>
+          <img
+            src={src}
+            {...rest}
+            onLoad={() => {
+              setLoading(false)
+            }}
+          />
+        </div>
       </div>
     </>
   )

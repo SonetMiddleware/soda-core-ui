@@ -1,5 +1,3 @@
-import CoreInit from '@soda/soda-core'
-
 import Button from './components/Button'
 import MediaCacheDisplay from './components/MediaCacheDisplay'
 import InlineTokenToolbar from './components/InlineTokenToolbar'
@@ -11,17 +9,11 @@ import OwnedTokenList from './components/ResourceDialog/OwnedTokenList'
 import UploadToken from './components/ResourceDialog/UploadToken'
 import { startWatch } from './utils/watcher'
 import { saveLocal, getLocal, removeLocal, StorageKeys } from './utils/storage'
-import { CustomEventId, dispatchCustomEvents } from './utils/common'
 import {
   removeTextInSharePost,
   POST_SHARE_TEXT,
   postShareHandler
 } from './utils/handleShare'
-import {
-  dispatchPaste,
-  pasteImageToActiveElements,
-  init as eventListenerInit
-} from './utils/eventDispatch'
 import { mint } from './utils/token'
 
 export {
@@ -30,13 +22,8 @@ export {
   getLocal,
   removeLocal,
   StorageKeys,
-  CustomEventId,
-  dispatchCustomEvents,
   postShareHandler,
   removeTextInSharePost,
-  dispatchPaste,
-  pasteImageToActiveElements,
-  eventListenerInit,
   Button,
   MediaCacheDisplay,
   InlineTokenToolbar,

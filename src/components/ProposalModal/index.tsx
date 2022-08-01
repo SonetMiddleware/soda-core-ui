@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Modal, Button } from 'antd'
+import { Modal, Button, Pagination } from 'antd'
 import * as ReactDOM from 'react-dom'
 import './index.less'
 import ProposalItem from '../ProposalItem'
@@ -21,23 +21,26 @@ interface IProps {
   onClose: () => void
   collectionDao: CollectionDao
 }
-
 export default (props: IProps) => {
+  const PAGE_SIZE = 10
   const { show, onClose, collectionDao } = props
   const { dao: currentDao } = collectionDao || {}
   const [list, setList] = useState<Proposal[]>([])
   const [showModal, setShowModal] = useState(false)
   const [address, setAddress] = useState('')
   const [inDao, setInDao] = useState(false)
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
   const [selectedProposal, setSelectedProposal] = useState<Proposal>()
   let divNode: HTMLDivElement = null
   divNode = document.createElement('div')
   document.body.append(divNode)
 
   const fetchProposalList = async (daoId: string) => {
-    const listResp = await getProposalList({ dao: daoId })
+    const listResp = await getProposalList({ dao: daoId, page, gap: PAGE_SIZE })
     const list = listResp.data
     setList(list)
+    setTotal(listResp.total)
   }
   const handleDetailDialogClose = () => {
     setShowModal(false)
@@ -62,7 +65,7 @@ export default (props: IProps) => {
       fetchProposalList(collectionDao.collection.id)
       fetchUserInfo()
     }
-  }, [collectionDao, show])
+  }, [collectionDao, show, page])
 
   const handleNew = () => {
     openExtensionPage(`daoNewProposal?dao=${collectionDao.collection.id}`)
@@ -140,6 +143,17 @@ export default (props: IProps) => {
                   }}
                 />
               ))}
+            </div>
+            <div className="list-pagination">
+              <Pagination
+                total={total}
+                pageSize={PAGE_SIZE}
+                onChange={(page: number) => {
+                  setPage(page)
+                }}
+                current={page}
+                showSizeChanger={false}
+              />
             </div>
           </div>
           {selectedProposal && (

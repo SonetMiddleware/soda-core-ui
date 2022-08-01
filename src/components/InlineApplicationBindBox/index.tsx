@@ -13,7 +13,7 @@ import {
 import Logo from '../../assets/images/logo.png'
 import IconClose from '../../assets/images/icon-close.png'
 import Button from '../Button'
-import { newPostTrigger } from '../../utils/handleShare'
+import { newPostTrigger, shareToEditor } from '../../utils/handleShare'
 
 interface IProps {
   app: string
@@ -27,18 +27,14 @@ export default function InlineApplicationBindBox(props: IProps) {
 
   const createBindingPost = async (account: string, appid: string) => {
     const content = `${BINDING_CONTENT_TITLE}. My address: ${account}, My id: ${appid}`
-    document.body.click()
-    //@ts-ignore
-    await navigator.clipboard.writeText(content)
-    newPostTrigger(app)
+    newPostTrigger(app, content)
     Notification.success(
       // FIXME: hard code for now
-      `Click into your ${
-        app === 'Twitter' ? 'tweet box' : 'status bar'
-      } and paste the binding message from your clipboard. Then post to finish the bind.`
+      `Please ${
+        app === 'Twitter' ? 'tweet' : 'post'
+      } this message to finish the bind process.`
     )
     setShow(false)
-    // await pasteShareTextToEditor(app, content)
   }
 
   useEffect(() => {

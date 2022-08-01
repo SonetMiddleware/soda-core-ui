@@ -26,7 +26,11 @@ import ProposalModal from '../ProposalModal'
 import { openExtensionPage } from '@/utils/chrome'
 import { mintAndShare } from '@/utils/token'
 import { saveLocal, StorageKeys } from '@/utils/storage'
-import { newPostTrigger } from '@/utils/handleShare'
+import {
+  newPostTrigger,
+  POST_SHARE_TEXT,
+  shareToEditor
+} from '@/utils/handleShare'
 import IconExpand from '../../assets/images/icon-expand.png'
 import IconShrink from '../../assets/images/icon-shrink.png'
 import IconFav from '../../assets/images/icon-fav.png'
@@ -213,14 +217,14 @@ function InlineTokenToolbar(props: {
       return
     }
     setMintLoading(true)
-    const response = await mintAndShare(originMediaSrc)
+    const res = await mintAndShare(originMediaSrc)
     setMintLoading(false)
-    if (response.error) {
+    if (res.error) {
       return
     }
     try {
       newPostTrigger(app)
-      // await pasteShareTextToEditor(app)
+      await shareToEditor(app, [POST_SHARE_TEXT, res.blob])
     } catch (e) {
       console.error(
         '[core-ui] InlineTokenToolbar handleMint newPostTrigger: ' + e
