@@ -7,7 +7,6 @@ import {
   NFT
 } from '@soda/soda-core'
 import { message } from 'antd'
-import { shareToEditor } from './handleShare'
 
 export const getTokenCacheMedia = async (token: NFT) => {
   // handle error outside this func

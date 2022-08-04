@@ -1,5 +1,6 @@
 import Button from './components/Button'
 import MediaCacheDisplay from './components/MediaCacheDisplay'
+import MediaDisplay from './components/MediaDisplay'
 import InlineTokenToolbar from './components/InlineTokenToolbar'
 import InlineApplicationBindBox from './components/InlineApplicationBindBox'
 import ListNoData from './components/ListNoData'
@@ -26,6 +27,7 @@ export {
   removeTextInSharePost,
   Button,
   MediaCacheDisplay,
+  MediaDisplay,
   InlineTokenToolbar,
   InlineApplicationBindBox,
   ListNoData,
