@@ -44,7 +44,7 @@ export default (props: IProps) => {
           return
         }
         //add to fav
-        await addTokenToFav({ address, token: res.token })
+        addTokenToFav({ address, token: res.token })
         setSubmitting(false)
         // share
         shareCallback && shareCallback(res.blob)
