@@ -21,7 +21,7 @@ export default (props: {
             uri: true
           }
         })
-        setSrc(source)
+        setSrc(source.uri ? source.uri : source)
         setLoading(true)
       } catch (e) {
         console.error(
