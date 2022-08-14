@@ -195,7 +195,7 @@ function InlineTokenToolbar(props: {
     e.stopPropagation()
     try {
       const source = await getTokenSource({ token })
-      window.open(source.uri ? source.uri : source, '_blank')
+      window.open(source.uri || source, '_blank')
     } catch (e) {
       console.error('[core-ui] InlineTokenToolbar handleToSource: ', e)
     }
