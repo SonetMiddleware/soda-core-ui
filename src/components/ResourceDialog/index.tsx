@@ -78,7 +78,7 @@ function ResourceDialog(props: IProps) {
               setTab(key)
             }}>
             <TabPane tab="My Favorite" key="1" className="fav-list" />
-            {isMintable && <TabPane tab="Mint" key="2" />}
+            {/* {isMintable && <TabPane tab="Mint" key="2" />} */}
             <TabPane tab="NFT Portfolio" key="3" className="fav-list" />
           </Tabs>
           <div className="tab-content">
@@ -88,12 +88,12 @@ function ResourceDialog(props: IProps) {
                 shareCallback={shareTokenCacheMedia}
               />
             )}
-            {tab === '2' && (
+            {/* {tab === '2' && (
               <UploadNFT
                 address={address}
                 shareCallback={shareTokenCacheMedia}
               />
-            )}
+            )} */}
             {tab === '3' && (
               <OwnedNFTList
                 address={address}
