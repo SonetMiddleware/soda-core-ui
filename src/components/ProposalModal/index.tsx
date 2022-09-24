@@ -9,7 +9,8 @@ import {
   getAddress,
   CollectionDao,
   Proposal,
-  getDaoList
+  getDaoList,
+  getProposalPermission
 } from '@soda/soda-core'
 import ProposalDetailDialog from '../ProposalDetailDialog'
 import CommonBtn from '../Button'
@@ -50,14 +51,16 @@ export default (props: IProps) => {
   const fetchUserInfo = async () => {
     const addr = await getAddress()
     setAddress(addr)
-    const res = await getDaoList({ address: addr })
-    const myDaos = res.data
-    for (const item of myDaos) {
-      if (item.id === currentDao?.id) {
-        setInDao(true)
-        return
-      }
-    }
+    const res = await getProposalPermission(currentDao?.id, addr);
+    setInDao(res);
+    // const res = await getDaoList({ address: addr })
+    // const myDaos = res.data
+    // for (const item of myDaos) {
+    //   if (item.id === currentDao?.id) {
+    //     setInDao(true)
+    //     return
+    //   }
+    // }
   }
 
   useEffect(() => {

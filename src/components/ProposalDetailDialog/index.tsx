@@ -12,7 +12,8 @@ import {
   ProposalStatusEnum,
   Proposal,
   sha3,
-  sign
+  sign,
+  getProposalPermission
 } from '@soda/soda-core'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 
@@ -31,6 +32,8 @@ export default (props: IProps) => {
   const [submitting, setSubmitting] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [voted, setVoted] = useState(false)
+  const [canVote, setCanVote] = useState(false)
+
   const totalSupporters = useMemo(() => {
     const totalVotersNum = detail.results.reduce((a, b) => a + b)
     if (totalVotersNum >= detail.ballotThreshold) {
@@ -96,6 +99,16 @@ export default (props: IProps) => {
           setVote(res.item)
         }
         setIsOpen(detail.status === ProposalStatusEnum.OPEN)
+        if (collectionDao?.dao.centralized === 1) {
+          // public dao
+          setCanVote(true)
+        } else {
+          const res = await getProposalPermission(
+            collectionDao?.dao.id,
+            address
+          )
+          setCanVote(res)
+        }
       }
     })()
   }, [show])
@@ -128,7 +141,7 @@ export default (props: IProps) => {
           <p>{detail.description}</p>
         </div>
         <div className="vote-submit-results-container">
-          {isOpen && inDao && (
+          {isOpen && canVote && (
             <div className="vote-container">
               <p className="vote-title">Cast your vote</p>
               <Radio.Group
