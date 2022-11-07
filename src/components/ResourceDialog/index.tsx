@@ -10,6 +10,7 @@ import * as PubSub from 'pubsub-js'
 import FavTokenList from './FavTokenList'
 import OwnedNFTList from './OwnedTokenList'
 import UploadNFT from './UploadToken'
+import MyAccount from './MyAccount'
 import { getCapableServiceNames } from '@soda/soda-core'
 import { POST_SHARE_TEXT } from '@/utils/handleShare'
 
@@ -80,6 +81,7 @@ function ResourceDialog(props: IProps) {
             <TabPane tab="My Favorite" key="1" className="fav-list" />
             {/* {isMintable && <TabPane tab="Mint" key="2" />} */}
             <TabPane tab="NFT Portfolio" key="3" className="fav-list" />
+            <TabPane tab="My Account" key="4" className="fav-list" />
           </Tabs>
           <div className="tab-content">
             {tab === '1' && (
@@ -100,6 +102,7 @@ function ResourceDialog(props: IProps) {
                 shareCallback={shareTokenCacheMedia}
               />
             )}
+            {tab === '4' && <MyAccount />}
           </div>
         </div>
       </Dialog>
