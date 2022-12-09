@@ -6,13 +6,25 @@ import IconCopy from '../../../assets/images/icon-copy.svg'
 import IconLink from '../../../assets/images/icon-link.svg'
 import IconLogout from '../../../assets/images/icon-logout.svg'
 import { fallbackCopyTextToClipboard } from '../../../utils'
+//@ts-ignore
+import * as fcl from '@onflow/fcl'
+import { getLocal, saveLocal, StorageKeys, removeLocal } from '@/utils/storage'
+import { getChainNameDisplay } from '../MyAccountDisplay'
+import { getAppConfig } from '@soda/soda-package-index'
+import { getAddress, getChainId } from '@soda/soda-core'
+
 const Chain_List = [
   {
     name: 'ETH Mainnet',
     chainId: 1
   },
   {
-    name: 'Flow Mainnet'
+    name: 'Flow Mainnet',
+    chainId: 'flowmain'
+  },
+  {
+    name: 'Flow Testnet',
+    chainId: 'flowtest'
   },
   {
     name: 'Polygon Mainnet',
@@ -23,18 +35,122 @@ const Chain_List = [
     chainId: 80001
   }
 ]
-const SODA_LINK = ''
-export default () => {
-  const [hasAuth, setHasAuth] = useState(true)
-  const [account, setAccount] = useState(
-    '0x1B94fb7625e13408393B5Ac17D0265E0d61349f2'
-  )
+const SODA_LINK = 'https://flow.sonet.one/'
+const ConnectToInjected = async () => {
+  let provider = null
+  if (typeof window.ethereum !== 'undefined') {
+    provider = window.ethereum
+    try {
+      await provider.request({ method: 'eth_requestAccounts' })
+    } catch (error) {
+      throw new Error('User Rejected')
+    }
+  } else {
+    throw new Error('No Web3 Provider found')
+  }
+  return provider
+}
+
+interface IProps {
+  onLogin: (account: { addr: string; chain: string | number }) => void
+  onLogout?: () => void
+}
+
+export default (props: IProps) => {
+  const { onLogin, onLogout } = props
+  const [hasAuth, setHasAuth] = useState(false)
+  const [account, setAccount] = useState<any>({ addr: '', chain: '' })
+
   const addresDisplay = useMemo(() => {
-    return account.substring(0, 6) + '...' + account.substr(-4)
+    if (account && account.addr) {
+      return account.addr.substring(0, 6) + '...' + account.addr.substr(-4)
+    }
+    return ''
   }, [account])
-  useEffect(() => {}, [])
-  const handleLogin = (chain: any) => {}
-  const handleLogout = () => {}
+
+  const getLocalLoginedAccount = async () => {
+    const chainId = await getChainId()
+    const address = await getAddress()
+    try {
+      const config = getAppConfig(chainId)
+      setHasAuth(true)
+      setAccount({ addr: address, chain: chainId })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+  useEffect(() => {
+    getLocalLoginedAccount()
+  }, [])
+  let currentUserRes
+  const loginFLow = (chain: any) => {
+    fcl
+      .config()
+      .put('challenge.scope', 'email') // request for Email
+      .put(
+        'accessNode.api',
+        chain.chainId === 'flowmain'
+          ? 'https://rest-mainnet.onflow.org'
+          : 'https://rest-testnet.onflow.org'
+      ) // Flow testnet
+      .put(
+        'discovery.wallet',
+        chain.chainId === 'flowmain'
+          ? 'https://flow-wallet.blocto.app/authn'
+          : 'https://flow-wallet-testnet.blocto.app/authn'
+      ) // Blocto testnet wallet
+      // .put(
+      //     'discovery.wallet',
+      //     'https://fcl-discovery.onflow.org/testnet/authn',
+      // )
+      .put('service.OpenID.scopes', 'email!')
+      .put('app.detail.icon', '')
+      .put('app.detail.title', 'Soda')
+      .put('app.detail.url', 'www.soda.com')
+      .put('flow.network', chain.chainId === 'flowmain' ? 'mainnet' : 'testnet')
+    fcl.currentUser().subscribe((userRes: any) => {
+      console.log(userRes)
+      currentUserRes = userRes
+    }) // fires everytime account connection status updates
+    fcl.authenticate().then((res: any) => {
+      console.log(res)
+      setHasAuth(true)
+      const _account = { addr: res.addr, chain: chain.chainId }
+      setAccount(_account)
+      const resStr = JSON.stringify(_account)
+      saveLocal(StorageKeys.LOGINED_ACCOUNT, resStr)
+      onLogin(_account)
+    })
+  }
+
+  const handleLogin = async (chain: any) => {
+    if (typeof chain.chainId === 'number') {
+      const res = await getAddress(chain.chainId)
+      console.log('handleLogin: ', res)
+      const _account = { addr: res, chain: chain.chainId }
+      setAccount(_account)
+      setHasAuth(true)
+      const resStr = JSON.stringify(_account)
+      saveLocal(StorageKeys.LOGINED_ACCOUNT, resStr)
+      onLogin(_account)
+    } else {
+      loginFLow(chain)
+    }
+  }
+
+  const handleLogout = () => {
+    if (
+      account.chain &&
+      typeof account.chain === 'string' &&
+      account.chain.includes('flow')
+    ) {
+      fcl.currentUser.unauthenticate()
+      removeLocal(StorageKeys.LOGINED_ACCOUNT)
+    }
+    setHasAuth(false)
+    setAccount({})
+    onLogout?.()
+  }
   return (
     <div className="soda-my-account">
       {!hasAuth && (
@@ -56,10 +172,12 @@ export default () => {
             <img
               src={IconCopy}
               alt=""
-              onClick={() => fallbackCopyTextToClipboard(account)}
+              onClick={() => fallbackCopyTextToClipboard(account.addr)}
             />
           </div>
-          <p className="soda-chain">Connected with ETH Mainnet</p>
+          <p className="soda-chain">
+            Connected with {getChainNameDisplay(account.chain)}
+          </p>
           <div className="horizon-line"></div>
           <SodaButton
             type="primary"

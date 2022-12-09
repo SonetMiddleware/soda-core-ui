@@ -58,7 +58,8 @@ export default (props: IProps) => {
         const res = await shareByCacheInfo({
           chainId: selectedObj.chainId,
           tokenId: '' + selectedObj.tokenId,
-          contract: selectedObj.contract
+          contract: selectedObj.contract,
+          source: selectedObj.source
         })
         setSubmitting(false)
         if (res.error) {

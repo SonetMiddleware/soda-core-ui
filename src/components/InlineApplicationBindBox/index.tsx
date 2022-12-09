@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { message as Notification } from 'antd'
 import {
   getAddress,
+  getChainId,
   getWeb2Account,
   getBindResult,
   bind1WithWeb3Proof,
@@ -14,7 +15,8 @@ import Logo from '../../assets/images/logo.png'
 import IconClose from '../../assets/images/icon-close.png'
 import Button from '../Button'
 import { newPostTrigger, shareToEditor } from '../../utils/handleShare'
-
+import { flowSign } from '../../utils/flowSign'
+import { getChainName } from '@soda/soda-util'
 interface IProps {
   app: string
 }
@@ -73,21 +75,31 @@ export default function InlineApplicationBindBox(props: IProps) {
     const address = await getAddress()
     //TODO: Web2 callback
     let appid = await getWeb2Account(app)
-
     const message = app + appid
-    const res: any = await sign({
-      message,
-      address
-    })
-    if (res.error) {
-      Notification.warning('Sign message failed, please retry later.')
-      return
+    const chainId = await getChainId()
+    let sig
+    if (String(chainId).includes('flow')) {
+      const network = chainId === 'flowmain' ? 'mainnet' : 'testnet'
+      const res = await flowSign(message, network)
+      sig = JSON.stringify(res)
+    } else {
+      const res: any = await sign({
+        message,
+        address
+      })
+      if (res.error) {
+        Notification.warning('Sign message failed, please retry later.')
+        return
+      }
+      sig = res.result
     }
+    const chain_name = await getChainName(chainId)
     const bindRes = await bind1WithWeb3Proof({
       address,
       appid: appid,
       application: app,
-      sig: res.result
+      sig: sig,
+      chain_name
     })
     if (bindRes) {
       // Notification.success('Bind succeed!');

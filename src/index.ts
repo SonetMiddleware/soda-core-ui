@@ -16,6 +16,8 @@ import {
   postShareHandler
 } from './utils/handleShare'
 import { mint } from './utils/token'
+import MyAccount from './components/ResourceDialog/MyAccount'
+import MyAccountDisplay from './components/ResourceDialog/MyAccountDisplay'
 
 export {
   startWatch,
@@ -34,6 +36,8 @@ export {
   ResourceDialog,
   FavTokenList,
   OwnedTokenList,
+  MyAccount,
+  MyAccountDisplay,
   UploadToken,
   POST_SHARE_TEXT,
   mint

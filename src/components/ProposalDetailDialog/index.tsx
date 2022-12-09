@@ -13,10 +13,11 @@ import {
   Proposal,
   sha3,
   sign,
-  getProposalPermission
+  getProposalPermission,
+  getChainId
 } from '@soda/soda-core'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
-
+import { flowSign } from '../../utils/flowSign'
 interface IProps {
   show: boolean
   detail: Proposal
@@ -60,16 +61,26 @@ export default (props: IProps) => {
       setSubmitting(true)
       const str = sha3(detail.id, vote)
 
-      const res: any = await sign({
-        message: str,
-        address
-      })
+      let sig
+      const chainId = await getChainId()
+      if (String(chainId).includes('flow')) {
+        const network = chainId === 'flowmain' ? 'mainnet' : 'testnet'
+        const res = await flowSign(str, network)
+        sig = JSON.stringify(res)
+      } else {
+        const res: any = await sign({
+          message: str,
+          address
+        })
+        sig = res.result
+      }
+
       const result = await voteProposal({
         voter: address,
         collectionId: collectionDao!.collection.id,
         proposalId: detail.id,
         item: vote,
-        sig: res.result
+        sig: sig
       })
       if (result) {
         message.success('Vote successful.')
@@ -137,8 +148,10 @@ export default (props: IProps) => {
         </div>
 
         <div className="divide-line"></div>
-        <div className="desc">
-          <p>{detail.description}</p>
+        <div
+          className="desc"
+          dangerouslySetInnerHTML={{ __html: detail.description }}>
+          {/* <p>{detail.description}</p> */}
         </div>
         <div className="vote-submit-results-container">
           {isOpen && canVote && (

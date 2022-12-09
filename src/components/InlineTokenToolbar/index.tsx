@@ -234,7 +234,7 @@ function InlineTokenToolbar(props: {
 
   const handleShare = async (app: string) => {
     //TODO, temp save
-    const mask = generateTokenMask(token)
+    const mask = await generateTokenMask(token)
     await saveLocal(StorageKeys.SHARING_NFT_META, mask)
     // FIXME: hardcode for now
     switch (app) {
@@ -271,10 +271,10 @@ function InlineTokenToolbar(props: {
       const address = await getAddress()
       await addTokenToFav({ address, token })
       setIsInFav(true)
-      message.success('Added to favorites successful!')
+      message.success('Added to favorite successfully!')
     } catch (err) {
       console.error(err)
-      message.error('Added to favorites failed.')
+      message.error('Added to favorite failed.')
     }
   }
 

@@ -56,7 +56,8 @@ export default (props: IProps) => {
         const res = await shareByCacheInfo({
           chainId: selectedObj.chainId,
           tokenId: '' + selectedObj.tokenId,
-          contract: selectedObj.contract
+          contract: selectedObj.contract,
+          source: selectedObj.source
         })
         message.success(
           'Your NFT is copied. Please paste into the new post dialog',

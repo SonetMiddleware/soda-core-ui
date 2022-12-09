@@ -18,7 +18,8 @@ export enum StorageKeys {
   MNEMONICS = 'TWIN_MNEMONICS',
   ACCOUNTS = 'TWIN_ACCOUNTS',
   MNEMONICS_CREATING = 'MNEMONICS_CREATING',
-  SHARING_NFT_META = 'SHARING_NFT_META'
+  SHARING_NFT_META = 'SHARING_NFT_META',
+  LOGINED_ACCOUNT = 'LOGINED_ACCOUNT'
 }
 
 export const saveMnenonics = async (mnemonics: string) => {

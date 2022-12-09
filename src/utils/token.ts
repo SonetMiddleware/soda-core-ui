@@ -23,12 +23,13 @@ export const getTokenCacheMedia = async (token: NFT) => {
 export const shareByCacheInfo = async (cache: TokenCache) => {
   const res: any = {}
   try {
-    const { chainId, tokenId, contract } = cache
+    const { chainId, tokenId, contract, source } = cache
     const token = await getToken({
       cache: {
         chainId,
         tokenId,
-        contract
+        contract,
+        source
       }
     })
     res.token = token

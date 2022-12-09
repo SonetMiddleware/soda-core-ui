@@ -23,7 +23,7 @@ function ResourceDialog(props: IProps) {
   const { onClose, shareCallback } = props
   const [show, setShow] = useState(false)
   const [address, setAddress] = useState('')
-  const [chainId, setChainId] = useState(0)
+  const [chainId, setChainId] = useState<number | string>(0)
   const [isMintable, setMintable] = useState(false)
   const [tab, setTab] = useState('1')
 
@@ -102,7 +102,14 @@ function ResourceDialog(props: IProps) {
                 shareCallback={shareTokenCacheMedia}
               />
             )}
-            {tab === '4' && <MyAccount />}
+            {tab === '4' && (
+              <MyAccount
+                onLogin={(account) => {
+                  setAddress(account.addr)
+                  setChainId(account.chain)
+                }}
+              />
+            )}
           </div>
         </div>
       </Dialog>

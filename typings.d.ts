@@ -9,3 +9,7 @@ declare module '*.svg' {
   export default url
 }
 /// <reference path="pathTo/chrome.d.ts"/>
+interface Window {
+  ethereum?: unknown | any
+  BinanceChain?: any
+}
