@@ -35,7 +35,7 @@ const Chain_List = [
     chainId: 80001
   }
 ]
-const SODA_LINK = 'https://flow.sonet.one/'
+const SODA_LINK = 'https://sodadapp.io/'
 const ConnectToInjected = async () => {
   let provider = null
   if (typeof window.ethereum !== 'undefined') {
