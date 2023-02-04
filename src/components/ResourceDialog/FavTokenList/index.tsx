@@ -99,12 +99,12 @@ export default (props: IProps) => {
         />
         <img
           className="icon-view"
-          src={chrome.extension.getURL('images/icon-view.png')}
+          src={chrome.runtime.getURL('images/icon-view.png')}
           alt=""
         />
         <img
           className="icon-filter"
-          src={chrome.extension.getURL('images/icon-filter.png')}
+          src={chrome.runtime.getURL('images/icon-filter.png')}
           alt=""
         />
       </div>

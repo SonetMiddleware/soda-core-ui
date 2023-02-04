@@ -85,7 +85,25 @@ export default (props: IProps) => {
   let currentUserRes
   const loginFLow = (chain: any) => {
     fcl
-      .config()
+      .config({
+        'accessNode.api':
+          chain.chainId === 'flowmain'
+            ? 'https://rest-mainnet.onflow.org'
+            : 'https://rest-testnet.onflow.org',
+        'discovery.wallet':
+          chain.chainId === 'flowmain'
+            ? 'https://fcl-discovery.onflow.org/authn'
+            : 'https://fcl-discovery.onflow.org/testnet/authn',
+        'discovery.authn.endpoint':
+          chain.chainId === 'flowmain'
+            ? 'https://fcl-discovery.onflow.org/api/authn'
+            : 'https://fcl-discovery.onflow.org/testnet/authn',
+        'discovery.authn.include': [
+          chain.chainId === 'flowmain'
+            ? '0xead892083b3e2c6c'
+            : '0x82ec283f88a62e65' // Dapper Wallet
+        ]
+      }) // Endpoint set to Testnet
       .put('challenge.scope', 'email') // request for Email
       .put(
         'accessNode.api',
@@ -93,16 +111,7 @@ export default (props: IProps) => {
           ? 'https://rest-mainnet.onflow.org'
           : 'https://rest-testnet.onflow.org'
       ) // Flow testnet
-      .put(
-        'discovery.wallet',
-        chain.chainId === 'flowmain'
-          ? 'https://flow-wallet.blocto.app/authn'
-          : 'https://flow-wallet-testnet.blocto.app/authn'
-      ) // Blocto testnet wallet
-      // .put(
-      //     'discovery.wallet',
-      //     'https://fcl-discovery.onflow.org/testnet/authn',
-      // )
+      .put('discovery.wallet.method', 'POP/RPC')
       .put('service.OpenID.scopes', 'email!')
       .put('app.detail.icon', '')
       .put('app.detail.title', 'Soda')
