@@ -17,6 +17,7 @@ import Button from '../Button'
 import { newPostTrigger, shareToEditor } from '../../utils/handleShare'
 import { flowSign } from '../../utils/flowSign'
 import { getChainName } from '@soda/soda-util'
+import { connectMetaMask } from '@soda/soda-util'
 interface IProps {
   app: string
 }
@@ -87,11 +88,15 @@ export default function InlineApplicationBindBox(props: IProps) {
         message,
         address
       })
-      if (res.error) {
-        Notification.warning('Sign message failed, please retry later.')
+      if (!res || res.error) {
+        Notification.warning('Sign message failed, please try again.')
         return
       }
       sig = res.result
+    }
+    if (!sig) {
+      Notification.warning('Sign message failed, please try again.')
+      return
     }
     const chain_name = await getChainName(chainId)
     const bindRes = await bind1WithWeb3Proof({
