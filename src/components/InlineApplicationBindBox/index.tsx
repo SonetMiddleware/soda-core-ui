@@ -42,26 +42,31 @@ export default function InlineApplicationBindBox(props: IProps) {
 
   useEffect(() => {
     ;(async () => {
-      const address = await getAddress()
-      if (!address) {
-        setShow(false)
-        return
-      }
-      let appid = await getWeb2Account(app)
-      setAppId(appid)
+      try {
+        const address = await getAddress()
+        console.log('address: ', address)
+        if (!address) {
+          setShow(false)
+          return
+        }
+        let appid = await getWeb2Account(app)
+        setAppId(appid)
 
-      const bindResult = await getBindResult({
-        address,
-        appid
-      })
-      const _binding = bindResult.find((item) => item.application === app)
-      setBinding(_binding)
-      if (_binding && _binding.contentId) {
-        setShow(false)
-      } else {
-        setShow(true)
-        // window.scrollTo({ top: 0, behavior: 'smooth' })
-        return
+        const bindResult = await getBindResult({
+          address,
+          appid
+        })
+        const _binding = bindResult.find((item) => item.application === app)
+        setBinding(_binding)
+        if (_binding && _binding.contentId) {
+          setShow(false)
+        } else {
+          setShow(true)
+          // window.scrollTo({ top: 0, behavior: 'smooth' })
+          return
+        }
+      } catch (e) {
+        console.log(e)
       }
     })()
   }, [])

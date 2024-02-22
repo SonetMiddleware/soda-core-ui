@@ -61,59 +61,59 @@ function ResourceDialog(props: IProps) {
   }
 
   return (
-    <ShadowView styleContent={''} styleSheets={['style.css']}>
-      <Dialog
-        open={show}
-        onClose={() => {
-          onClose?.()
-        }}>
-        <div className="resource-dialog-container" ref={ref}>
-          <Button onClick={() => setShow(false)} className="btn-close">
-            Close
-          </Button>
+    // <ShadowView styleContent={''} styleSheets={['style.css']}>
+    <Dialog
+      open={show}
+      onClose={() => {
+        onClose?.()
+      }}>
+      <div className="resource-dialog-container" ref={ref}>
+        <Button onClick={() => setShow(false)} className="btn-close">
+          Close
+        </Button>
 
-          <Tabs
-            animated={false}
-            activeKey={tab}
-            onChange={(key) => {
-              setTab(key)
-            }}>
-            <TabPane tab="My Favorite" key="1" className="fav-list" />
-            {/* {isMintable && <TabPane tab="Mint" key="2" />} */}
-            <TabPane tab="NFT Portfolio" key="3" className="fav-list" />
-            <TabPane tab="My Account" key="4" className="fav-list" />
-          </Tabs>
-          <div className="tab-content">
-            {tab === '1' && (
-              <FavTokenList
-                address={address}
-                shareCallback={shareTokenCacheMedia}
-              />
-            )}
-            {/* {tab === '2' && (
+        <Tabs
+          animated={false}
+          activeKey={tab}
+          onChange={(key) => {
+            setTab(key)
+          }}>
+          <TabPane tab="My Favorite" key="1" className="fav-list" />
+          {/* {isMintable && <TabPane tab="Mint" key="2" />} */}
+          <TabPane tab="NFT Portfolio" key="3" className="fav-list" />
+          <TabPane tab="My Account" key="4" className="fav-list" />
+        </Tabs>
+        <div className="tab-content">
+          {tab === '1' && (
+            <FavTokenList
+              address={address}
+              shareCallback={shareTokenCacheMedia}
+            />
+          )}
+          {/* {tab === '2' && (
               <UploadNFT
                 address={address}
                 shareCallback={shareTokenCacheMedia}
               />
             )} */}
-            {tab === '3' && (
-              <OwnedNFTList
-                address={address}
-                shareCallback={shareTokenCacheMedia}
-              />
-            )}
-            {tab === '4' && (
-              <MyAccount
-                onLogin={(account) => {
-                  setAddress(account.addr)
-                  setChainId(account.chain)
-                }}
-              />
-            )}
-          </div>
+          {tab === '3' && (
+            <OwnedNFTList
+              address={address}
+              shareCallback={shareTokenCacheMedia}
+            />
+          )}
+          {tab === '4' && (
+            <MyAccount
+              onLogin={(account) => {
+                setAddress(account.addr)
+                setChainId(account.chain)
+              }}
+            />
+          )}
         </div>
-      </Dialog>
-    </ShadowView>
+      </div>
+    </Dialog>
+    // </ShadowView>
   )
 }
 

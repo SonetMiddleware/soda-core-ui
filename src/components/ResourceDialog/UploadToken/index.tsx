@@ -60,10 +60,10 @@ export default (props: IProps) => {
   }
   return (
     <div className="mint-container">
-      <img src={chrome.extension.getURL('images/upload.png')} alt="" />
+      <img src={chrome.runtime.getURL('images/upload.png')} alt="" />
       <p>Select local images to mint NFT</p>
       <Upload
-        capture=""
+        capture="user"
         accept=".jpg,.jpeg,.png"
         beforeUpload={beforeUpload}
         onRemove={onRemove}
